@@ -1,0 +1,654 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>First Day Fever — The Foundry</title>
+  <style>
+    :root {
+      --bg: #0f0f0f;
+      --surface: #1a1a1a;
+      --border: #2e2e2e;
+      --accent: #f05a28;
+      --accent-dim: #8a3218;
+      --text: #e8e3db;
+      --text-muted: #7a7065;
+      --text-em: #f0c080;
+      --success: #4caf82;
+      --font-body: 'Georgia', serif;
+      --font-ui: 'Helvetica Neue', Arial, sans-serif;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--font-body);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      padding: 2rem 1rem 4rem;
+    }
+
+    header {
+      width: 100%;
+      max-width: 680px;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      margin-bottom: 2.5rem;
+    }
+
+    .logo-mark {
+      width: 40px;
+      height: 40px;
+      background: var(--accent);
+      clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+      flex-shrink: 0;
+    }
+
+    .logo-text {
+      font-family: var(--font-ui);
+      font-size: 0.7rem;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+    }
+
+    .logo-text strong {
+      display: block;
+      font-size: 1rem;
+      letter-spacing: 0.15em;
+      color: var(--text);
+    }
+
+    #game {
+      width: 100%;
+      max-width: 680px;
+    }
+
+    /* Title screen */
+    #title-screen {
+      text-align: center;
+      padding: 3rem 1rem;
+    }
+
+    #title-screen h1 {
+      font-family: var(--font-ui);
+      font-size: clamp(2rem, 6vw, 3.5rem);
+      font-weight: 900;
+      letter-spacing: -0.02em;
+      line-height: 1;
+      margin-bottom: 0.5rem;
+    }
+
+    #title-screen h1 span {
+      color: var(--accent);
+    }
+
+    .subtitle {
+      font-family: var(--font-ui);
+      font-size: 0.8rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      margin-bottom: 2.5rem;
+    }
+
+    .intro-blurb {
+      font-size: 1rem;
+      line-height: 1.7;
+      color: var(--text-muted);
+      max-width: 480px;
+      margin: 0 auto 3rem;
+    }
+
+    /* Scene card */
+    #scene-card {
+      display: none;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: 2rem 2rem 1.5rem;
+      animation: fadeIn 0.35s ease;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(8px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .scene-label {
+      font-family: var(--font-ui);
+      font-size: 0.65rem;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 1.25rem;
+    }
+
+    .scene-text {
+      font-size: 1.05rem;
+      line-height: 1.8;
+      margin-bottom: 2rem;
+    }
+
+    .scene-text em {
+      color: var(--text-em);
+      font-style: italic;
+    }
+
+    .scene-text strong {
+      color: var(--text);
+    }
+
+    /* Choices */
+    #choices {
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+      margin-top: 0.5rem;
+    }
+
+    .choice-btn {
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--text);
+      font-family: var(--font-body);
+      font-size: 0.95rem;
+      line-height: 1.5;
+      text-align: left;
+      padding: 0.85rem 1.1rem;
+      border-radius: 3px;
+      cursor: pointer;
+      transition: border-color 0.15s, background 0.15s, color 0.15s;
+      position: relative;
+    }
+
+    .choice-btn::before {
+      content: '▶';
+      font-size: 0.55rem;
+      color: var(--accent-dim);
+      position: absolute;
+      left: 0.5rem;
+      top: 50%;
+      transform: translateY(-50%);
+      opacity: 0;
+      transition: opacity 0.15s;
+    }
+
+    .choice-btn:hover {
+      border-color: var(--accent);
+      background: rgba(240, 90, 40, 0.07);
+      color: #fff;
+      padding-left: 1.5rem;
+    }
+
+    .choice-btn:hover::before {
+      opacity: 1;
+    }
+
+    /* Ending state */
+    .ending-banner {
+      font-family: var(--font-ui);
+      font-size: 0.65rem;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      margin-bottom: 0.25rem;
+    }
+
+    .ending-title {
+      font-family: var(--font-ui);
+      font-size: 1.5rem;
+      font-weight: 800;
+      letter-spacing: -0.01em;
+      color: var(--accent);
+      margin-bottom: 1.5rem;
+    }
+
+    .ending-title.good { color: var(--success); }
+    .ending-title.neutral { color: var(--text-em); }
+    .ending-title.bad { color: var(--text-muted); }
+
+    /* Shared button style */
+    .btn-primary {
+      display: inline-block;
+      background: var(--accent);
+      color: #fff;
+      font-family: var(--font-ui);
+      font-size: 0.8rem;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      border: none;
+      padding: 0.75rem 1.75rem;
+      border-radius: 3px;
+      cursor: pointer;
+      transition: background 0.15s;
+      margin-top: 1.5rem;
+    }
+
+    .btn-primary:hover {
+      background: #d04a1a;
+    }
+
+    /* Progress trail */
+    #trail {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.4rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .trail-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--border);
+    }
+
+    .trail-dot.done {
+      background: var(--accent-dim);
+    }
+
+    .trail-dot.current {
+      background: var(--accent);
+    }
+
+    /* Divider */
+    .divider {
+      border: none;
+      border-top: 1px solid var(--border);
+      margin: 1.5rem 0;
+    }
+
+    /* Responsive */
+    @media (max-width: 480px) {
+      #scene-card { padding: 1.5rem 1.25rem 1.25rem; }
+      .scene-text { font-size: 0.95rem; }
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="logo-mark"></div>
+    <div class="logo-text">
+      <strong>THE FOUNDRY</strong>
+      Internal Game
+    </div>
+  </header>
+
+  <div id="game">
+
+    <!-- Title Screen -->
+    <div id="title-screen">
+      <p class="subtitle">A text adventure</p>
+      <h1>First Day<br><span>Fever</span></h1>
+      <p class="intro-blurb">
+        It's 8:47am. Your first day at The Foundry — and someone has already
+        written <em>PITCH DAY</em> on the whiteboard in letters the size of your career anxiety.
+      </p>
+      <button class="btn-primary" onclick="startGame()">Start Your Day</button>
+    </div>
+
+    <!-- Scene Card -->
+    <div id="scene-card">
+      <div id="trail"></div>
+      <div class="scene-label" id="scene-label"></div>
+      <div class="scene-text" id="scene-text"></div>
+      <hr class="divider" />
+      <div id="choices"></div>
+    </div>
+
+  </div>
+
+  <script>
+    // ─────────────────────────────────────────────
+    //  SCENE DATA
+    // ─────────────────────────────────────────────
+    const scenes = {
+
+      start: {
+        label: 'The Foundry — 8:47am',
+        text: `
+          The elevator doors open onto a floor buzzing with nervous energy.
+          Someone has written <em>"PITCH DAY 🔥"</em> on the whiteboard in huge red letters.
+          Your line manager, Priya, rushes past with a laptop tucked under each arm.<br><br>
+          <em>"You made it! Good. We need all hands on deck. The Vesper Group pitch is at 3pm.
+          Twelve-week rebrand. One day to finish it."</em><br><br>
+          She disappears into a glass-walled meeting room. You're standing in the middle of the
+          open plan, bag still on your shoulder.
+        `,
+        choices: [
+          { text: 'Head straight to your desk.', next: 'desk_prepared' },
+          { text: 'Swing by the coffee machine first.', next: 'coffee_machine' },
+        ],
+      },
+
+      coffee_machine: {
+        label: 'The Coffee Machine — 8:51am',
+        text: `
+          The machine is occupied by Marcus from Strategy, who is explaining his theory on
+          brand archetypes to someone who very clearly did not ask. You wait. And wait.<br><br>
+          Finally: a double espresso. You turn to head to your desk — and walk directly
+          into Priya, who is carrying a stack of printed decks.<br><br>
+          Papers everywhere. Priya stares at you.<br><br>
+          <em>"You're the new one. Great. Help me pick these up."</em>
+        `,
+        choices: [
+          { text: 'Apologise profusely and offer to help with anything.', next: 'apologetic_arrival' },
+          { text: 'Focus — get to your seat and open the brief.', next: 'desk_prepared' },
+        ],
+      },
+
+      apologetic_arrival: {
+        label: 'Your Desk — 9:03am',
+        text: `
+          Priya waves off your apology. <em>"Forget it. We don't have time for feelings today."</em>
+          She sits next to you and gives you the full project rundown in under three minutes.
+          Somehow, the chaos of the spill broke the ice — by the time you sit down you feel
+          like you've worked here for weeks.<br><br>
+          You open the Vesper brief. It's ambitious: full brand identity, logo, typography,
+          colour palette, tone of voice. For a pitch. Today.<br><br>
+          <em>"I need your fresh eyes on the logo concepts. We've got three directions. Which do you push?"</em>
+        `,
+        choices: [
+          { text: '"Push the bold geometric mark — it feels modern and brave."', next: 'bold_geometric' },
+          { text: '"The wordmark is safer — clients always understand words."', next: 'wordmark' },
+        ],
+      },
+
+      desk_prepared: {
+        label: 'Your Desk — 8:55am',
+        text: `
+          You find your desk. Someone has taped a sticky note to the monitor:
+          <em>"Welcome to The Foundry. Don't panic."</em> Good advice.<br><br>
+          You open your laptop, pull up the shared drive, and find the Vesper brief.
+          It's ambitious: full brand identity, logo, typography, colour palette, tone of voice.
+          For a pitch. Today.<br><br>
+          Priya slides a chair next to you.
+          <em>"I need your fresh eyes on the logo concepts. We've got three directions. Which do you push?"</em>
+        `,
+        choices: [
+          { text: '"Push the bold geometric mark — it feels modern and brave."', next: 'bold_geometric' },
+          { text: '"The wordmark is safer — clients always understand words."', next: 'wordmark' },
+          { text: '"I think we need a fourth direction entirely."', next: 'fourth_direction' },
+        ],
+      },
+
+      bold_geometric: {
+        label: 'Open Plan — 10:15am',
+        text: `
+          <em>"Interesting call,"</em> says Marcus, looking up from his phone.
+          <em>"Very confident."</em> Priya nods slowly — she likes it.<br><br>
+          You spend the next three hours refining the concept, building out mockups,
+          writing the rationale. The work is alive. You're in the zone.<br><br>
+          Then, at 1:30pm, your laptop freezes.<br><br>
+          <strong>Full stop. The spinning wheel of doom.</strong>
+        `,
+        choices: [
+          { text: 'Scream internally and restart, hoping autosave worked.', next: 'autosave_panic' },
+          { text: 'Borrow a colleague\'s machine and keep going.', next: 'borrow_machine' },
+        ],
+      },
+
+      wordmark: {
+        label: 'Open Plan — 10:20am',
+        text: `
+          The team agrees it's the <em>"safe"</em> choice — but nobody's excited.
+          You can feel the energy draining from the room. Marcus mutters something
+          about <em>"playing not to lose."</em><br><br>
+          Still, you get to work. Clean, considered, solid. The deck is coming together.<br><br>
+          At 1:30pm a Slack message arrives from the client:
+          <em>"Quick one — could we see something a bit more… brave?"</em>
+        `,
+        choices: [
+          { text: 'Pivot hard — rebuild around the geometric direction.', next: 'last_minute_pivot' },
+          { text: 'Hold firm. The wordmark is what they asked for.', next: 'hold_firm' },
+        ],
+      },
+
+      fourth_direction: {
+        label: 'Open Plan — 9:58am',
+        text: `
+          Priya goes quiet for a long second.<br><br>
+          Then she laughs — a real, surprised laugh.
+          <em>"Okay. Show me."</em><br><br>
+          You sketch your idea on paper first, photograph it, drop it in Slack.
+          The room perks up. Energy shifts. Marcus puts his phone down.
+          This is the one.<br><br>
+          But it's now 10am and you've already spent an hour on this.
+          The clock is not your friend.
+        `,
+        choices: [
+          { text: 'Put your headphones on and sprint to finish it yourself.', next: 'sprint_finish' },
+          { text: 'Split the work — assign tasks across the team.', next: 'team_split' },
+        ],
+      },
+
+      autosave_panic: {
+        label: 'Your Desk — 1:34pm',
+        text: `
+          You hold your breath through the restart.<br><br>
+          Miraculously — <em>blessedly</em> — autosave came through.
+          You lost maybe fifteen minutes of work. Your hands are still shaking
+          but the file is intact. You rebuild the missing pieces from memory.
+          Muscle memory. Sheer adrenaline.<br><br>
+          It's 2:40pm. The deck is ready. <strong>Barely.</strong>
+        `,
+        choices: [
+          { text: 'Head to the pitch.', next: 'pitch_day' },
+        ],
+      },
+
+      borrow_machine: {
+        label: 'Jamie\'s Desk — 1:33pm',
+        text: `
+          Jamie from Design looks up from her lunch and slides her laptop across without
+          a word. No hesitation. That's The Foundry.<br><br>
+          You transfer your files via Slack and keep moving. It costs you thirty minutes
+          but you finish stronger for it. By 2:55pm the deck is locked, loaded,
+          and looking good.
+        `,
+        choices: [
+          { text: 'Head to the pitch.', next: 'pitch_day' },
+        ],
+      },
+
+      last_minute_pivot: {
+        label: 'Open Plan — 1:35pm',
+        text: `
+          You throw caution to the wind.<br><br>
+          Ninety minutes. You rebuild around the geometric concept, roughing in the
+          new direction as fast as your hands can move. It's scrappy in places —
+          but it's <em>alive</em>.<br><br>
+          Priya looks over your shoulder and points at the screen.
+          <em>"This,"</em> she says quietly, <em>"is The Foundry."</em>
+        `,
+        choices: [
+          { text: 'Head to the pitch.', next: 'pitch_day' },
+        ],
+      },
+
+      hold_firm: {
+        label: 'Open Plan — 1:35pm',
+        text: `
+          You hold the line. The wordmark is what was asked for;
+          the wordmark is what you'll present. You spend the afternoon
+          polishing it until it shines — clean, considered, professional.<br><br>
+          Priya nods. <em>"It's solid work."</em> She doesn't say it's exciting.
+          But it's solid.
+        `,
+        choices: [
+          { text: 'Head to the pitch.', next: 'pitch_weak' },
+        ],
+      },
+
+      sprint_finish: {
+        label: 'Your Desk — 11am–2:58pm',
+        text: `
+          Headphones on. World off.<br><br>
+          You enter a state that can only be described as <em>the zone</em>.
+          Coffee appears beside you at some point — you don't remember ordering it.
+          Someone orders pizza. The whole agency is behind this now.<br><br>
+          At 2:58pm you drop the finished deck into the shared folder
+          and sit back in your chair.<br><br>
+          Priya reads it. Doesn't speak for ten seconds.
+          <em>"Let's go."</em>
+        `,
+        choices: [
+          { text: 'Head to the pitch.', next: 'pitch_day' },
+        ],
+      },
+
+      team_split: {
+        label: 'Open Plan — 10:05am',
+        text: `
+          You assign the typography explorations to Jamie, the colour deck to Marcus,
+          and focus on the centrepiece mark yourself.<br><br>
+          It comes together like clockwork. Better than any of you could have done alone.
+          By 2:45pm you have fifteen minutes to breathe — almost unheard of on pitch day.<br><br>
+          Priya walks over, looks at the finished deck, and says nothing for a moment.
+          <em>"This is what we do here,"</em> she says finally.
+        `,
+        choices: [
+          { text: 'Head to the pitch.', next: 'pitch_great' },
+        ],
+      },
+
+      // ─── ENDINGS ───────────────────────────────
+
+      pitch_great: {
+        label: 'The Vesper Group — 3:00pm',
+        isEnding: true,
+        endingClass: 'good',
+        endingTitle: 'The Foundry Way',
+        text: `
+          The client leans back in their chair and smiles — a slow, genuine smile.<br><br>
+          <em>"This is exactly what we were hoping for. Actually, it's more than that."</em><br><br>
+          The room exhales. Handshakes all round. On the walk back to the office
+          nobody says much — the good kind of quiet, the kind that follows something
+          you know was right.<br><br>
+          Back at your desk you find a new sticky note on your monitor:<br><br>
+          <em>"Welcome to The Foundry. You get it."</em>
+        `,
+      },
+
+      pitch_day: {
+        label: 'The Vesper Group — 3:00pm',
+        isEnding: true,
+        endingClass: 'neutral',
+        endingTitle: 'In the Bag',
+        text: `
+          The client nods along, asks a few questions,
+          requests a couple of tweaks. Nothing major.<br><br>
+          On the walk back Priya says, <em>"Not bad for a first day."</em><br><br>
+          You're pretty sure that's the highest compliment she gives. You'll take it.
+          You already know you're coming back tomorrow — and the day after that.
+        `,
+      },
+
+      pitch_weak: {
+        label: 'The Vesper Group — 3:00pm',
+        isEnding: true,
+        endingClass: 'bad',
+        endingTitle: 'The Nephew',
+        text: `
+          The client thanks you warmly and says they'll be in touch.<br><br>
+          Three days later, a polite email arrives. They've decided
+          to <em>"go in a different direction."</em><br><br>
+          The agency whispers have it that the client's nephew does Canva.<br><br>
+          You put the sticky note in your pocket — <em>"Don't panic"</em> —
+          and start sketching for next time. There's always a next time at The Foundry.
+        `,
+      },
+
+    };
+
+    // ─────────────────────────────────────────────
+    //  GAME ENGINE
+    // ─────────────────────────────────────────────
+    let history = [];
+
+    function startGame() {
+      document.getElementById('title-screen').style.display = 'none';
+      const card = document.getElementById('scene-card');
+      card.style.display = 'block';
+      history = [];
+      showScene('start');
+    }
+
+    function showScene(id) {
+      const scene = scenes[id];
+      if (!scene) return;
+
+      history.push(id);
+
+      // Trail
+      const trail = document.getElementById('trail');
+      trail.innerHTML = '';
+      history.forEach((_, i) => {
+        const dot = document.createElement('div');
+        dot.className = 'trail-dot' + (i === history.length - 1 ? ' current' : ' done');
+        trail.appendChild(dot);
+      });
+
+      // Label
+      document.getElementById('scene-label').textContent = scene.label;
+
+      // Text
+      document.getElementById('scene-text').innerHTML = scene.text;
+
+      // Choices / ending
+      const choicesEl = document.getElementById('choices');
+      choicesEl.innerHTML = '';
+
+      if (scene.isEnding) {
+        const banner = document.createElement('div');
+        banner.className = 'ending-banner';
+        banner.textContent = 'Ending';
+
+        const title = document.createElement('div');
+        title.className = `ending-title ${scene.endingClass || ''}`;
+        title.textContent = scene.endingTitle;
+
+        const replay = document.createElement('button');
+        replay.className = 'btn-primary';
+        replay.textContent = 'Play Again';
+        replay.onclick = () => {
+          document.getElementById('title-screen').style.display = 'block';
+          document.getElementById('scene-card').style.display = 'none';
+        };
+
+        choicesEl.appendChild(banner);
+        choicesEl.appendChild(title);
+        choicesEl.appendChild(replay);
+      } else {
+        scene.choices.forEach(choice => {
+          const btn = document.createElement('button');
+          btn.className = 'choice-btn';
+          btn.innerHTML = choice.text;
+          btn.onclick = () => {
+            // Re-trigger animation
+            const card = document.getElementById('scene-card');
+            card.style.animation = 'none';
+            card.offsetHeight; // reflow
+            card.style.animation = '';
+            showScene(choice.next);
+          };
+          choicesEl.appendChild(btn);
+        });
+      }
+
+      // Scroll to top of card
+      document.getElementById('scene-card').scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  </script>
+
+</body>
+</html>
