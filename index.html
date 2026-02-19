@@ -3,303 +3,459 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>First Day Fever — The Foundry</title>
+  <title>FORGE QUEST: Xero World Domination — The Foundry</title>
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet" />
   <style>
     :root {
-      --bg: #0f0f0f;
-      --surface: #1a1a1a;
-      --border: #2e2e2e;
-      --accent: #f05a28;
-      --accent-dim: #8a3218;
-      --text: #e8e3db;
-      --text-muted: #7a7065;
-      --text-em: #f0c080;
-      --success: #4caf82;
-      --font-body: 'Georgia', serif;
-      --font-ui: 'Helvetica Neue', Arial, sans-serif;
+      --xero-blue:       #13B5EA;
+      --xero-navy:       #1C1B69;
+      --xero-dark:       #090918;
+      --xero-darker:     #05050F;
+      --xero-white:      #E8F4FD;
+      --xero-light-blue: #7DD3F0;
+      --xero-gold:       #FFD700;
+      --xero-green:      #00C896;
+      --xero-red:        #FF4455;
+      --xero-purple:     #6B4EFF;
     }
 
-    * { box-sizing: border-box; margin: 0; padding: 0; }
+    * { box-sizing: border-box; margin: 0; padding: 0; image-rendering: pixelated; }
 
     body {
-      background: var(--bg);
-      color: var(--text);
-      font-family: var(--font-body);
+      background-color: var(--xero-darker);
+      background-image:
+        repeating-linear-gradient(
+          0deg,
+          transparent,
+          transparent 3px,
+          rgba(0, 0, 0, 0.18) 3px,
+          rgba(0, 0, 0, 0.18) 4px
+        );
+      color: var(--xero-white);
+      font-family: 'Press Start 2P', monospace;
+      font-size: 10px;
+      line-height: 1.9;
       min-height: 100vh;
       display: flex;
       flex-direction: column;
       align-items: center;
-      justify-content: flex-start;
-      padding: 2rem 1rem 4rem;
+      padding: 1.5rem 1rem 5rem;
     }
 
+    /* ─── HEADER ──────────────────────────────── */
     header {
       width: 100%;
-      max-width: 680px;
+      max-width: 740px;
       display: flex;
       align-items: center;
-      gap: 1rem;
-      margin-bottom: 2.5rem;
+      justify-content: space-between;
+      padding: 0.75rem 0;
+      border-bottom: 4px solid var(--xero-navy);
+      margin-bottom: 1.25rem;
     }
 
-    .logo-mark {
-      width: 40px;
-      height: 40px;
-      background: var(--accent);
+    .logo-area { display: flex; align-items: center; gap: 0.75rem; }
+
+    .forge-hex {
+      width: 30px;
+      height: 30px;
+      background: var(--xero-blue);
       clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
       flex-shrink: 0;
     }
 
     .logo-text {
-      font-family: var(--font-ui);
-      font-size: 0.7rem;
-      letter-spacing: 0.25em;
-      text-transform: uppercase;
-      color: var(--text-muted);
+      font-size: 7px;
+      color: var(--xero-light-blue);
+      line-height: 2;
+    }
+    .logo-text strong { color: var(--xero-white); font-size: 9px; display: block; }
+
+    /* XP panel */
+    #xp-area { display: none; text-align: right; }
+
+    .xp-label {
+      font-size: 6px;
+      color: var(--xero-light-blue);
+      letter-spacing: 0.1em;
+      margin-bottom: 3px;
     }
 
-    .logo-text strong {
-      display: block;
-      font-size: 1rem;
-      letter-spacing: 0.15em;
-      color: var(--text);
+    .pixel-bar {
+      height: 12px;
+      background: var(--xero-navy);
+      border: 2px solid var(--xero-blue);
+      overflow: hidden;
+    }
+    .pixel-bar-fill {
+      height: 100%;
+      transition: width 0.6s steps(20, end);
+    }
+    #xp-bar-fill   { background: var(--xero-gold);  width: 0%; }
+    #dom-bar-fill  { background: var(--xero-blue);  width: 0%; }
+
+    .bar-text {
+      font-size: 6px;
+      color: var(--xero-white);
+      margin-top: 2px;
     }
 
-    #game {
-      width: 100%;
-      max-width: 680px;
-    }
-
-    /* Title screen */
-    #title-screen {
-      text-align: center;
-      padding: 3rem 1rem;
-    }
-
-    #title-screen h1 {
-      font-family: var(--font-ui);
-      font-size: clamp(2rem, 6vw, 3.5rem);
-      font-weight: 900;
-      letter-spacing: -0.02em;
-      line-height: 1;
-      margin-bottom: 0.5rem;
-    }
-
-    #title-screen h1 span {
-      color: var(--accent);
-    }
-
-    .subtitle {
-      font-family: var(--font-ui);
-      font-size: 0.8rem;
-      letter-spacing: 0.2em;
-      text-transform: uppercase;
-      color: var(--text-muted);
-      margin-bottom: 2.5rem;
-    }
-
-    .intro-blurb {
-      font-size: 1rem;
-      line-height: 1.7;
-      color: var(--text-muted);
-      max-width: 480px;
-      margin: 0 auto 3rem;
-    }
-
-    /* Scene card */
-    #scene-card {
+    /* ─── DOMINATION METER ────────────────────── */
+    #domination-wrap {
       display: none;
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 4px;
-      padding: 2rem 2rem 1.5rem;
-      animation: fadeIn 0.35s ease;
-    }
-
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(8px); }
-      to   { opacity: 1; transform: translateY(0); }
-    }
-
-    .scene-label {
-      font-family: var(--font-ui);
-      font-size: 0.65rem;
-      letter-spacing: 0.3em;
-      text-transform: uppercase;
-      color: var(--accent);
+      width: 100%;
+      max-width: 740px;
       margin-bottom: 1.25rem;
     }
 
-    .scene-text {
-      font-size: 1.05rem;
-      line-height: 1.8;
+    .dom-header {
+      display: flex;
+      justify-content: space-between;
+      font-size: 7px;
+      color: var(--xero-blue);
+      margin-bottom: 3px;
+    }
+
+    #dom-pct { color: var(--xero-gold); }
+
+    /* ─── GAME WRAP ───────────────────────────── */
+    #game { width: 100%; max-width: 740px; }
+
+    /* ─── TITLE SCREEN ────────────────────────── */
+    #title-screen { text-align: center; padding: 2rem 1rem; }
+
+    .char-sprite {
+      font-size: 3.5rem;
+      display: block;
+      margin: 0 auto 1rem;
+      animation: float 1.8s ease-in-out infinite;
+      filter: drop-shadow(0 0 12px var(--xero-blue));
+    }
+
+    @keyframes float {
+      0%, 100% { transform: translateY(0px); }
+      50%       { transform: translateY(-10px); }
+    }
+
+    .game-eyebrow {
+      font-size: 7px;
+      color: var(--xero-gold);
+      letter-spacing: 0.25em;
+      margin-bottom: 1rem;
+    }
+
+    #title-screen h1 {
+      font-size: clamp(18px, 4vw, 28px);
+      color: var(--xero-blue);
+      text-shadow: 4px 4px 0 var(--xero-navy), -2px -2px 0 var(--xero-navy);
+      line-height: 1.3;
+      margin-bottom: 0.4rem;
+    }
+
+    .title-sub {
+      font-size: clamp(9px, 2vw, 13px);
+      color: var(--xero-gold);
+      text-shadow: 2px 2px 0 rgba(0,0,0,0.6);
       margin-bottom: 2rem;
     }
 
-    .scene-text em {
-      color: var(--text-em);
-      font-style: italic;
-    }
-
-    .scene-text strong {
-      color: var(--text);
-    }
-
-    /* Choices */
-    #choices {
+    /* Quest map icons */
+    .quest-map {
       display: flex;
-      flex-direction: column;
-      gap: 0.75rem;
-      margin-top: 0.5rem;
+      justify-content: center;
+      gap: 1.5rem;
+      flex-wrap: wrap;
+      margin: 1.25rem auto;
+      max-width: 480px;
     }
+
+    .q-icon {
+      text-align: center;
+      font-size: 7px;
+      color: var(--xero-navy);
+      opacity: 0.55;
+      transition: opacity 0.2s;
+    }
+    .q-icon .i { font-size: 1.5rem; display: block; margin-bottom: 0.3rem; }
+    .q-icon.unlocked { color: var(--xero-light-blue); opacity: 1; }
+
+    .intro-blurb {
+      font-size: 9px;
+      line-height: 2.4;
+      color: var(--xero-light-blue);
+      max-width: 520px;
+      margin: 0 auto 2.5rem;
+    }
+
+    /* Blink */
+    .blink { animation: blink 1s step-end infinite; }
+    @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
+
+    /* ─── PRIMARY BUTTON ──────────────────────── */
+    .btn-primary {
+      display: inline-block;
+      background: var(--xero-blue);
+      color: var(--xero-darker);
+      font-family: 'Press Start 2P', monospace;
+      font-size: 10px;
+      font-weight: normal;
+      border: none;
+      padding: 0.9rem 2rem;
+      cursor: pointer;
+      letter-spacing: 0.06em;
+      box-shadow: 5px 5px 0 var(--xero-navy);
+      transition: box-shadow 0.05s, transform 0.05s;
+    }
+    .btn-primary:hover  { box-shadow: 3px 3px 0 var(--xero-navy); transform: translate(2px,2px); }
+    .btn-primary:active { box-shadow: none; transform: translate(5px,5px); }
+
+    /* ─── SCENE CARD ──────────────────────────── */
+    #scene-card {
+      display: none;
+      background: var(--xero-dark);
+      border: 4px solid var(--xero-blue);
+      box-shadow: 6px 6px 0 var(--xero-navy);
+      padding: 1.75rem 1.75rem 1.5rem;
+      animation: pixelIn 0.2s steps(4, end);
+    }
+
+    @keyframes pixelIn {
+      0%   { opacity: 0; transform: scale(0.97); }
+      100% { opacity: 1; transform: scale(1); }
+    }
+
+    /* Trail dots */
+    #trail {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 5px;
+      margin-bottom: 1.25rem;
+    }
+
+    .trail-dot {
+      width: 10px;
+      height: 10px;
+      background: var(--xero-navy);
+      border: 2px solid #2a2a6a;
+    }
+    .trail-dot.done    { background: #2a2a6a; border-color: var(--xero-navy); }
+    .trail-dot.current { background: var(--xero-blue); border-color: var(--xero-light-blue); }
+
+    /* Quest header row */
+    .quest-header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 0.75rem;
+      margin-bottom: 1.25rem;
+      padding-bottom: 0.75rem;
+      border-bottom: 2px solid var(--xero-navy);
+    }
+
+    .scene-label {
+      font-size: 8px;
+      color: var(--xero-blue);
+      letter-spacing: 0.08em;
+      line-height: 1.7;
+      flex: 1;
+    }
+
+    .quest-badge {
+      font-size: 6px;
+      color: var(--xero-gold);
+      border: 1px solid rgba(255,215,0,0.4);
+      background: rgba(255,215,0,0.07);
+      padding: 3px 8px;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+
+    /* Scene text */
+    .scene-text {
+      font-size: 9px;
+      line-height: 2.4;
+      color: var(--xero-white);
+      margin-bottom: 1.75rem;
+    }
+
+    .scene-text em   { color: var(--xero-light-blue); font-style: normal; }
+    .scene-text strong { color: var(--xero-gold); }
+
+    /* Speaker block */
+    .speech {
+      background: var(--xero-navy);
+      border-left: 4px solid var(--xero-blue);
+      padding: 0.7rem 1rem;
+      margin: 0.75rem 0;
+      font-size: 9px;
+      line-height: 2.2;
+    }
+
+    .speaker {
+      font-size: 7px;
+      color: var(--xero-gold);
+      display: block;
+      margin-bottom: 0.3rem;
+    }
+
+    /* Stat pill */
+    .pill {
+      display: inline-block;
+      font-size: 7px;
+      border: 1px solid;
+      padding: 2px 7px;
+      margin: 0.15rem 0.25rem 0.15rem 0;
+    }
+    .pill-xp    { border-color: var(--xero-gold);   color: var(--xero-gold); }
+    .pill-green { border-color: var(--xero-green);  color: var(--xero-green); }
+    .pill-blue  { border-color: var(--xero-blue);   color: var(--xero-blue); }
+    .pill-red   { border-color: var(--xero-red);    color: var(--xero-red); }
+
+    /* Stars */
+    .stars { color: var(--xero-gold); font-size: 1.2rem; letter-spacing: 0.4rem; display: block; margin: 0.75rem 0; }
+
+    hr.divider { border: none; border-top: 2px solid var(--xero-navy); margin: 1.25rem 0; }
+
+    /* ─── CHOICES ──────────────────────────────── */
+    #choices { display: flex; flex-direction: column; gap: 0.7rem; }
 
     .choice-btn {
-      background: transparent;
-      border: 1px solid var(--border);
-      color: var(--text);
-      font-family: var(--font-body);
-      font-size: 0.95rem;
-      line-height: 1.5;
+      background: var(--xero-navy);
+      border: 2px solid #2a2a6a;
+      color: var(--xero-white);
+      font-family: 'Press Start 2P', monospace;
+      font-size: 8px;
+      line-height: 2;
       text-align: left;
-      padding: 0.85rem 1.1rem;
-      border-radius: 3px;
+      padding: 0.9rem 1rem 0.9rem 1.75rem;
       cursor: pointer;
-      transition: border-color 0.15s, background 0.15s, color 0.15s;
       position: relative;
+      transition: none;
     }
 
     .choice-btn::before {
       content: '▶';
-      font-size: 0.55rem;
-      color: var(--accent-dim);
+      font-size: 7px;
+      color: var(--xero-navy);
       position: absolute;
-      left: 0.5rem;
+      left: 0.6rem;
       top: 50%;
       transform: translateY(-50%);
-      opacity: 0;
-      transition: opacity 0.15s;
     }
 
     .choice-btn:hover {
-      border-color: var(--accent);
-      background: rgba(240, 90, 40, 0.07);
-      color: #fff;
-      padding-left: 1.5rem;
+      background: var(--xero-blue);
+      border-color: var(--xero-white);
+      color: var(--xero-darker);
     }
+    .choice-btn:hover::before { color: var(--xero-darker); }
 
-    .choice-btn:hover::before {
-      opacity: 1;
-    }
-
-    /* Ending state */
-    .ending-banner {
-      font-family: var(--font-ui);
-      font-size: 0.65rem;
-      letter-spacing: 0.3em;
-      text-transform: uppercase;
-      color: var(--text-muted);
-      margin-bottom: 0.25rem;
+    /* ─── ENDINGS ─────────────────────────────── */
+    .ending-eyebrow {
+      font-size: 7px;
+      color: var(--xero-light-blue);
+      letter-spacing: 0.25em;
+      margin-bottom: 0.4rem;
     }
 
     .ending-title {
-      font-family: var(--font-ui);
-      font-size: 1.5rem;
-      font-weight: 800;
-      letter-spacing: -0.01em;
-      color: var(--accent);
-      margin-bottom: 1.5rem;
+      font-size: clamp(12px, 2.5vw, 18px);
+      line-height: 1.4;
+      text-shadow: 3px 3px 0 rgba(0,0,0,0.6);
+      margin-bottom: 1.25rem;
     }
+    .ending-title.good    { color: var(--xero-green); }
+    .ending-title.neutral { color: var(--xero-blue);  }
+    .ending-title.bad     { color: var(--xero-red);   }
 
-    .ending-title.good { color: var(--success); }
-    .ending-title.neutral { color: var(--text-em); }
-    .ending-title.bad { color: var(--text-muted); }
-
-    /* Shared button style */
-    .btn-primary {
-      display: inline-block;
-      background: var(--accent);
-      color: #fff;
-      font-family: var(--font-ui);
-      font-size: 0.8rem;
-      font-weight: 700;
-      letter-spacing: 0.12em;
-      text-transform: uppercase;
-      border: none;
-      padding: 0.75rem 1.75rem;
-      border-radius: 3px;
-      cursor: pointer;
-      transition: background 0.15s;
-      margin-top: 1.5rem;
+    .world-spin {
+      font-size: 3rem;
+      display: block;
+      text-align: center;
+      margin: 0.75rem auto;
+      animation: spin 2s linear infinite;
+      filter: drop-shadow(0 0 16px var(--xero-blue));
     }
+    @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
 
-    .btn-primary:hover {
-      background: #d04a1a;
-    }
-
-    /* Progress trail */
-    #trail {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 0.4rem;
-      margin-bottom: 1.5rem;
-    }
-
-    .trail-dot {
-      width: 8px;
-      height: 8px;
-      border-radius: 50%;
-      background: var(--border);
-    }
-
-    .trail-dot.done {
-      background: var(--accent-dim);
-    }
-
-    .trail-dot.current {
-      background: var(--accent);
-    }
-
-    /* Divider */
-    .divider {
-      border: none;
-      border-top: 1px solid var(--border);
-      margin: 1.5rem 0;
-    }
-
-    /* Responsive */
+    /* ─── RESPONSIVE ──────────────────────────── */
     @media (max-width: 480px) {
-      #scene-card { padding: 1.5rem 1.25rem 1.25rem; }
-      .scene-text { font-size: 0.95rem; }
+      body { font-size: 9px; padding: 1rem 0.5rem 4rem; }
+      #scene-card { padding: 1.25rem; }
+      .choice-btn { font-size: 7px; }
+      .btn-primary { font-size: 9px; padding: 0.75rem 1.25rem; }
     }
   </style>
 </head>
 <body>
 
+  <!-- ─── HEADER ──────────────────────────────────── -->
   <header>
-    <div class="logo-mark"></div>
-    <div class="logo-text">
-      <strong>THE FOUNDRY</strong>
-      Internal Game
+    <div class="logo-area">
+      <div class="forge-hex"></div>
+      <div class="logo-text">
+        <strong>THE FOUNDRY</strong>
+        Xero Internal Agency
+      </div>
+    </div>
+    <div id="xp-area">
+      <div class="xp-label">FORGE XP</div>
+      <div class="pixel-bar" style="width:140px">
+        <div class="pixel-bar-fill" id="xp-bar-fill"></div>
+      </div>
+      <div class="bar-text" id="xp-text">0 / 100</div>
     </div>
   </header>
 
+  <!-- ─── WORLD DOMINATION METER ──────────────────── -->
+  <div id="domination-wrap">
+    <div class="dom-header">
+      <span>🌏 XERO WORLD DOMINATION</span>
+      <span id="dom-pct">0%</span>
+    </div>
+    <div class="pixel-bar" style="width:100%">
+      <div class="pixel-bar-fill" id="dom-bar-fill"></div>
+    </div>
+  </div>
+
+  <!-- ─── GAME ─────────────────────────────────────── -->
   <div id="game">
 
     <!-- Title Screen -->
     <div id="title-screen">
-      <p class="subtitle">A text adventure</p>
-      <h1>First Day<br><span>Fever</span></h1>
+      <span class="char-sprite">⚒️</span>
+      <p class="game-eyebrow">★ THE FOUNDRY PRESENTS ★</p>
+      <h1>FORGE QUEST</h1>
+      <p class="title-sub">XERO WORLD DOMINATION</p>
+
+      <div class="quest-map">
+        <div class="q-icon unlocked"><span class="i">📣</span>MARKETING</div>
+        <div class="q-icon"><span class="i">💡</span>PRODUCT</div>
+        <div class="q-icon"><span class="i">🌏</span>GLOBAL HQ</div>
+      </div>
+
       <p class="intro-blurb">
-        It's 8:47am. Your first day at The Foundry — and someone has already
-        written <em>PITCH DAY</em> on the whiteboard in letters the size of your career anxiety.
+        You are <strong style="color:var(--xero-gold)">FORGE</strong> —
+        creative champion of The Foundry,<br>
+        Xero's internal agency.<br><br>
+        Armed with a magic iron and unlimited creative courage,<br>
+        you must find Xero's stakeholders, hear their problems,<br>
+        and help them level up their thinking.<br><br>
+        <strong style="color:var(--xero-gold)">
+          The mission: Xero World Domination.
+        </strong>
       </p>
-      <button class="btn-primary" onclick="startGame()">Start Your Day</button>
+
+      <button class="btn-primary blink" onclick="startGame()">▶ START QUEST</button>
     </div>
 
     <!-- Scene Card -->
     <div id="scene-card">
       <div id="trail"></div>
-      <div class="scene-label" id="scene-label"></div>
+      <div class="quest-header">
+        <div class="scene-label" id="scene-label"></div>
+        <div class="quest-badge" id="quest-badge"></div>
+      </div>
       <div class="scene-text" id="scene-text"></div>
       <hr class="divider" />
       <div id="choices"></div>
@@ -309,343 +465,535 @@
 
   <script>
     // ─────────────────────────────────────────────
-    //  SCENE DATA
+    //  STATE
+    // ─────────────────────────────────────────────
+    let xp = 0;
+    let dom = 0;
+    let history = [];
+
+    function gainXP(n) {
+      xp = Math.min(100, xp + n);
+      document.getElementById('xp-bar-fill').style.width = xp + '%';
+      document.getElementById('xp-text').textContent = xp + ' / 100';
+    }
+
+    function gainDom(n) {
+      dom = Math.min(100, dom + n);
+      document.getElementById('dom-bar-fill').style.width = dom + '%';
+      document.getElementById('dom-pct').textContent = dom + '%';
+    }
+
+    // ─────────────────────────────────────────────
+    //  SCENES
     // ─────────────────────────────────────────────
     const scenes = {
 
+      // ══════════════════════════════════════════
+      //  QUEST 1 — MARKETING
+      // ══════════════════════════════════════════
+
       start: {
-        label: 'The Foundry — 8:47am',
+        label: '📍 THE FOUNDRY — MORNING',
+        badge: 'QUEST 1: MARKETING',
+        xp: 0, dom: 0,
         text: `
-          The elevator doors open onto a floor buzzing with nervous energy.
-          Someone has written <em>"PITCH DAY 🔥"</em> on the whiteboard in huge red letters.
-          Your line manager, Priya, rushes past with a laptop tucked under each arm.<br><br>
-          <em>"You made it! Good. We need all hands on deck. The Vesper Group pitch is at 3pm.
-          Twelve-week rebrand. One day to finish it."</em><br><br>
-          She disappears into a glass-walled meeting room. You're standing in the middle of the
-          open plan, bag still on your shoulder.
+          The Foundry hums with creative energy.<br><br>
+          You, <strong>FORGE</strong>, pick up your magic iron —
+          still warm from yesterday's campaign.<br><br>
+          A message flashes on the big screen:<br><br>
+          <em>🔔 NEW QUEST UNLOCKED</em><br><br>
+          <strong>HAMISH</strong> from Marketing has appeared.
+          He's pacing near the whiteboard, pulling his hair.<br><br>
+          <div class="speech">
+            <span class="speaker">HAMISH — Head of Marketing</span>
+            "FORGE! Thank goodness. My campaign brief is a disaster.
+            It says everything and nothing.
+            We launch in two weeks."
+          </div>
+          He slides a 47-page document across the table.
+          It smells of desperation.
         `,
         choices: [
-          { text: 'Head straight to your desk.', next: 'desk_prepared' },
-          { text: 'Swing by the coffee machine first.', next: 'coffee_machine' },
+          { text: 'Read every page before responding.', next: 'read_brief' },
+          { text: 'Ask: "What\'s the ONE thing you want people to feel?"', next: 'one_thing' },
+          { text: 'Offer to rewrite the brief yourself overnight.', next: 'rewrite_alone' },
         ],
       },
 
-      coffee_machine: {
-        label: 'The Coffee Machine — 8:51am',
+      read_brief: {
+        label: '📋 HAMISH\'S DESK — 10AM',
+        badge: 'QUEST 1: MARKETING',
+        xp: 5, dom: 0,
         text: `
-          The machine is occupied by Marcus from Strategy, who is explaining his theory on
-          brand archetypes to someone who very clearly did not ask. You wait. And wait.<br><br>
-          Finally: a double espresso. You turn to head to your desk — and walk directly
-          into Priya, who is carrying a stack of printed decks.<br><br>
-          Papers everywhere. Priya stares at you.<br><br>
-          <em>"You're the new one. Great. Help me pick these up."</em>
+          You read every page. All 47 of them.<br><br>
+          By page 23, buried in a footnote, you find it:<br><br>
+          <div class="speech">
+            <em>"Ultimately, Xero frees small business owners<br>
+            to do what they love."</em>
+          </div>
+          <strong>That's it. That's everything.</strong><br><br>
+          You circle it and slide it back to Hamish.<br><br>
+          <div class="speech">
+            <span class="speaker">FORGE</span>
+            "Your campaign is on page 23."
+          </div>
+          Hamish stares at it. Then at you. Then back at it.<br><br>
+          <div class="speech">
+            <span class="speaker">HAMISH</span>
+            "...I wrote that at midnight.
+            I didn't think anyone would read it."
+          </div>
         `,
         choices: [
-          { text: 'Apologise profusely and offer to help with anything.', next: 'apologetic_arrival' },
-          { text: 'Focus — get to your seat and open the brief.', next: 'desk_prepared' },
+          { text: 'Build the full campaign around that insight.', next: 'campaign_built' },
+          { text: 'Run a team workshop to align everyone first.', next: 'team_workshop' },
         ],
       },
 
-      apologetic_arrival: {
-        label: 'Your Desk — 9:03am',
+      one_thing: {
+        label: '📋 THE WHITEBOARD — 10AM',
+        badge: 'QUEST 1: MARKETING',
+        xp: 10, dom: 5,
         text: `
-          Priya waves off your apology. <em>"Forget it. We don't have time for feelings today."</em>
-          She sits next to you and gives you the full project rundown in under three minutes.
-          Somehow, the chaos of the spill broke the ice — by the time you sit down you feel
-          like you've worked here for weeks.<br><br>
-          You open the Vesper brief. It's ambitious: full brand identity, logo, typography,
-          colour palette, tone of voice. For a pitch. Today.<br><br>
-          <em>"I need your fresh eyes on the logo concepts. We've got three directions. Which do you push?"</em>
+          Hamish pauses mid-pace.<br><br>
+          <div class="speech">
+            <span class="speaker">HAMISH</span>
+            "The... one thing?"
+          </div>
+          He's never been asked that before.<br><br>
+          You wait. Your magic iron glows faintly blue.<br><br>
+          <div class="speech">
+            <span class="speaker">HAMISH</span>
+            "Freedom. Xero gives small business owners
+            their lives back."
+          </div>
+          <span class="pill pill-xp">+10 XP</span>
+          <span class="pill pill-green">INSIGHT UNLOCKED 🔓</span><br><br>
+          The whole brief rewrites itself in your mind.
+          You grab a marker and fill the whiteboard in three minutes flat.
+          The room goes quiet.
         `,
         choices: [
-          { text: '"Push the bold geometric mark — it feels modern and brave."', next: 'bold_geometric' },
-          { text: '"The wordmark is safer — clients always understand words."', next: 'wordmark' },
+          { text: 'Build the full campaign around that insight.', next: 'campaign_built' },
+          { text: 'Run a team workshop to align everyone first.', next: 'team_workshop' },
         ],
       },
 
-      desk_prepared: {
-        label: 'Your Desk — 8:55am',
+      rewrite_alone: {
+        label: '📋 YOUR DESK — 2AM',
+        badge: 'QUEST 1: MARKETING',
+        xp: 0, dom: 0,
         text: `
-          You find your desk. Someone has taped a sticky note to the monitor:
-          <em>"Welcome to The Foundry. Don't panic."</em> Good advice.<br><br>
-          You open your laptop, pull up the shared drive, and find the Vesper brief.
-          It's ambitious: full brand identity, logo, typography, colour palette, tone of voice.
-          For a pitch. Today.<br><br>
-          Priya slides a chair next to you.
-          <em>"I need your fresh eyes on the logo concepts. We've got three directions. Which do you push?"</em>
+          You work through the night.<br><br>
+          By 4am you have something brilliant.
+          By 7am Hamish has read it.<br><br>
+          <div class="speech">
+            <span class="speaker">HAMISH</span>
+            "This is... amazing. But it doesn't feel like us.
+            Where did our voice go?"
+          </div>
+          <span class="pill pill-red">⚠ CREATIVE MISALIGNMENT</span><br><br>
+          Good work alone isn't enough.
+          Creative needs to come <em>from</em> people, not just <em>for</em> them.<br><br>
+          You take a breath and try a different approach.
         `,
         choices: [
-          { text: '"Push the bold geometric mark — it feels modern and brave."', next: 'bold_geometric' },
-          { text: '"The wordmark is safer — clients always understand words."', next: 'wordmark' },
-          { text: '"I think we need a fourth direction entirely."', next: 'fourth_direction' },
+          { text: 'Ask: "What\'s the ONE thing you want people to feel?"', next: 'one_thing' },
         ],
       },
 
-      bold_geometric: {
-        label: 'Open Plan — 10:15am',
+      campaign_built: {
+        label: '🚀 LAUNCH DAY — EVERYWHERE',
+        badge: 'QUEST 1: COMPLETE ✓',
+        xp: 20, dom: 15,
         text: `
-          <em>"Interesting call,"</em> says Marcus, looking up from his phone.
-          <em>"Very confident."</em> Priya nods slowly — she likes it.<br><br>
-          You spend the next three hours refining the concept, building out mockups,
-          writing the rationale. The work is alive. You're in the zone.<br><br>
-          Then, at 1:30pm, your laptop freezes.<br><br>
-          <strong>Full stop. The spinning wheel of doom.</strong>
+          The campaign lands.<br><br>
+          <strong>"Freedom to Do What You Love."</strong><br><br>
+          Across every channel. Every market. Every screen.<br><br>
+          <span class="pill pill-green">Open rates ↑ 34%</span>
+          <span class="pill pill-green">Trial signups ↑ 22%</span><br><br>
+          Hamish cries a little. Just a little.<br><br>
+          <div class="speech">
+            <span class="speaker">HAMISH</span>
+            "FORGE. You didn't just fix my brief.
+            You levelled me up."
+          </div>
+          <strong>★ STAKEHOLDER LEVELLED UP: HAMISH ★</strong>
+          <span class="stars">★ ★ ★</span>
+          Xero grows. The world takes note.
         `,
         choices: [
-          { text: 'Scream internally and restart, hoping autosave worked.', next: 'autosave_panic' },
-          { text: 'Borrow a colleague\'s machine and keep going.', next: 'borrow_machine' },
+          { text: '→ Accept next quest.', next: 'quest2_start' },
         ],
       },
 
-      wordmark: {
-        label: 'Open Plan — 10:20am',
+      team_workshop: {
+        label: '🏃 WORKSHOP — THE FOUNDRY',
+        badge: 'QUEST 1: COMPLETE ✓',
+        xp: 15, dom: 10,
         text: `
-          The team agrees it's the <em>"safe"</em> choice — but nobody's excited.
-          You can feel the energy draining from the room. Marcus mutters something
-          about <em>"playing not to lose."</em><br><br>
-          Still, you get to work. Clean, considered, solid. The deck is coming together.<br><br>
-          At 1:30pm a Slack message arrives from the client:
-          <em>"Quick one — could we see something a bit more… brave?"</em>
+          You gather the team.
+          Post-its everywhere. Someone brings Tim Tams.<br><br>
+          Two hours later the wall tells the whole story:<br><br>
+          <div class="speech">
+            <em>"Xero — freedom for the people who make the world run."</em>
+          </div>
+          Hamish didn't just hear it. <strong>He built it.</strong><br><br>
+          That's the difference.<br><br>
+          <strong>★ STAKEHOLDER LEVELLED UP: HAMISH ★</strong>
+          <span class="stars">★ ★ ☆</span>
+          <span class="pill pill-blue">BONUS: Alignment XP unlocked</span>
         `,
         choices: [
-          { text: 'Pivot hard — rebuild around the geometric direction.', next: 'last_minute_pivot' },
-          { text: 'Hold firm. The wordmark is what they asked for.', next: 'hold_firm' },
+          { text: '→ Accept next quest.', next: 'quest2_start' },
         ],
       },
 
-      fourth_direction: {
-        label: 'Open Plan — 9:58am',
+      // ══════════════════════════════════════════
+      //  QUEST 2 — PRODUCT
+      // ══════════════════════════════════════════
+
+      quest2_start: {
+        label: '📍 XERO HQ — LATER THAT DAY',
+        badge: 'QUEST 2: PRODUCT',
+        xp: 5, dom: 5,
         text: `
-          Priya goes quiet for a long second.<br><br>
-          Then she laughs — a real, surprised laugh.
-          <em>"Okay. Show me."</em><br><br>
-          You sketch your idea on paper first, photograph it, drop it in Slack.
-          The room perks up. Energy shifts. Marcus puts his phone down.
-          This is the one.<br><br>
-          But it's now 10am and you've already spent an hour on this.
-          The clock is not your friend.
+          <em>🔔 NEW QUEST UNLOCKED</em><br><br>
+          <strong>PRIYA</strong> from Product Design is next.<br><br>
+          She's launching a new feature — <em>SmartRecon</em>.
+          The launch deck is, in her words:<br><br>
+          <div class="speech">
+            <span class="speaker">PRIYA — Senior Product Designer</span>
+            "Technically correct. Emotionally dead.
+            62 slides of nothing."
+          </div>
+          She slides it across.
+          Everything is accurate. Nothing is interesting.<br><br>
+          FORGE, your iron glows. This is your moment.
         `,
         choices: [
-          { text: 'Put your headphones on and sprint to finish it yourself.', next: 'sprint_finish' },
-          { text: 'Split the work — assign tasks across the team.', next: 'team_split' },
+          { text: '"Let\'s cut this to 10 slides and lead with a human story."', next: 'cut_deck' },
+          { text: '"What does SmartRecon FEEL like for a real Xero customer?"', next: 'empathy_quest' },
+          { text: '"I\'ll upgrade the visuals — that should fix it."', next: 'just_visuals' },
         ],
       },
 
-      autosave_panic: {
-        label: 'Your Desk — 1:34pm',
+      empathy_quest: {
+        label: '🔍 EMPATHY MODE ACTIVATED',
+        badge: 'QUEST 2: PRODUCT',
+        xp: 15, dom: 10,
         text: `
-          You hold your breath through the restart.<br><br>
-          Miraculously — <em>blessedly</em> — autosave came through.
-          You lost maybe fifteen minutes of work. Your hands are still shaking
-          but the file is intact. You rebuild the missing pieces from memory.
-          Muscle memory. Sheer adrenaline.<br><br>
-          It's 2:40pm. The deck is ready. <strong>Barely.</strong>
+          You ring Jenny — a real Xero customer.
+          She runs a three-person catering company in Christchurch.<br><br>
+          <div class="speech">
+            <span class="speaker">JENNY — Xero Customer</span>
+            "Before SmartRecon I was doing the books at midnight
+            every Sunday. Now it takes 20 minutes.
+            I got Sunday evenings back.
+            I went to my daughter's recital."
+          </div>
+          <span class="pill pill-xp">+15 XP</span>
+          <span class="pill pill-green">HUMAN INSIGHT UNLOCKED 🔓</span><br><br>
+          You don't need 62 slides.
+          <strong>You need Jenny's story.</strong>
         `,
         choices: [
-          { text: 'Head to the pitch.', next: 'pitch_day' },
+          { text: 'Rebuild the deck around Jenny\'s story.', next: 'deck_rebuilt' },
         ],
       },
 
-      borrow_machine: {
-        label: 'Jamie\'s Desk — 1:33pm',
+      cut_deck: {
+        label: '✂️ THE EDIT SESSION',
+        badge: 'QUEST 2: PRODUCT',
+        xp: 8, dom: 5,
         text: `
-          Jamie from Design looks up from her lunch and slides her laptop across without
-          a word. No hesitation. That's The Foundry.<br><br>
-          You transfer your files via Slack and keep moving. It costs you thirty minutes
-          but you finish stronger for it. By 2:55pm the deck is locked, loaded,
-          and looking good.
+          62 slides become 10.<br><br>
+          Slide 1: One customer. One moment. One feeling.<br>
+          Slides 2–9: The solution, shown — not told.<br>
+          Slide 10: The future.<br><br>
+          Priya stares at it.<br><br>
+          <div class="speech">
+            <span class="speaker">PRIYA</span>
+            "It's better. But something's still missing."
+          </div>
+          She's right. It needs the human truth.
         `,
         choices: [
-          { text: 'Head to the pitch.', next: 'pitch_day' },
+          { text: '"What does SmartRecon FEEL like for a real Xero customer?"', next: 'empathy_quest' },
         ],
       },
 
-      last_minute_pivot: {
-        label: 'Open Plan — 1:35pm',
+      just_visuals: {
+        label: '🎨 DESIGN BAND-AID',
+        badge: 'QUEST 2: PRODUCT',
+        xp: 2, dom: 0,
         text: `
-          You throw caution to the wind.<br><br>
-          Ninety minutes. You rebuild around the geometric concept, roughing in the
-          new direction as fast as your hands can move. It's scrappy in places —
-          but it's <em>alive</em>.<br><br>
-          Priya looks over your shoulder and points at the screen.
-          <em>"This,"</em> she says quietly, <em>"is The Foundry."</em>
+          New charts. New colours. New icons.<br><br>
+          The deck is now a beautiful corpse.<br><br>
+          Priya is polite about it. The team is polite.
+          Everyone is very, very polite.<br><br>
+          <div class="speech">
+            <span class="speaker">PRIYA</span>
+            "FORGE... it looks better.
+            But it still doesn't say anything."
+          </div>
+          <span class="pill pill-red">⚠ COSMETIC FIX — NO XP BONUS</span><br><br>
+          Great creative isn't decoration.
+          It's the right idea, beautifully expressed.
         `,
         choices: [
-          { text: 'Head to the pitch.', next: 'pitch_day' },
+          { text: 'Go deeper — find the human story first.', next: 'empathy_quest' },
         ],
       },
 
-      hold_firm: {
-        label: 'Open Plan — 1:35pm',
+      deck_rebuilt: {
+        label: '🚀 LAUNCH DAY — SMARTRECON',
+        badge: 'QUEST 2: COMPLETE ✓',
+        xp: 20, dom: 20,
         text: `
-          You hold the line. The wordmark is what was asked for;
-          the wordmark is what you'll present. You spend the afternoon
-          polishing it until it shines — clean, considered, professional.<br><br>
-          Priya nods. <em>"It's solid work."</em> She doesn't say it's exciting.
-          But it's solid.
+          The presentation opens with Jenny's story.
+          No data. No product screenshots. Just:<br><br>
+          <div class="speech">
+            <em>"I got Sunday evenings back."</em>
+          </div>
+          The room is silent for three seconds.
+          Then the applause starts.<br><br>
+          <span class="pill pill-green">SmartRecon adoption ↑ 41% above forecast</span><br><br>
+          Priya gets a standing ovation.<br><br>
+          <div class="speech">
+            <span class="speaker">PRIYA</span>
+            "FORGE. You didn't just fix my deck.
+            You taught me to think differently."
+          </div>
+          <strong>★ STAKEHOLDER LEVELLED UP: PRIYA ★</strong>
+          <span class="stars">★ ★ ★</span>
         `,
         choices: [
-          { text: 'Head to the pitch.', next: 'pitch_weak' },
+          { text: '→ Accept final quest.', next: 'quest3_start' },
         ],
       },
 
-      sprint_finish: {
-        label: 'Your Desk — 11am–2:58pm',
+      // ══════════════════════════════════════════
+      //  QUEST 3 — WORLD DOMINATION
+      // ══════════════════════════════════════════
+
+      quest3_start: {
+        label: '🌏 GLOBAL HQ — THE FINAL QUEST',
+        badge: 'FINAL QUEST',
+        xp: 10, dom: 10,
         text: `
-          Headphones on. World off.<br><br>
-          You enter a state that can only be described as <em>the zone</em>.
-          Coffee appears beside you at some point — you don't remember ordering it.
-          Someone orders pizza. The whole agency is behind this now.<br><br>
-          At 2:58pm you drop the finished deck into the shared folder
-          and sit back in your chair.<br><br>
-          Priya reads it. Doesn't speak for ten seconds.
-          <em>"Let's go."</em>
+          <em>🔔 FINAL QUEST UNLOCKED 🔔</em><br><br>
+          A video call connects.
+          It's the <strong>CMO</strong>. The full leadership team.
+          All eyes on FORGE.<br><br>
+          <div class="speech">
+            <span class="speaker">CMO — Global HQ</span>
+            "FORGE. We've seen what you've done for Hamish.
+            For Priya. Now we need something bigger.
+            Much bigger."
+          </div>
+          The brief appears on screen:<br><br>
+          <strong>"Make Xero the most loved brand in small business. Globally."</strong><br><br>
+          The magic iron trembles in your hand.
+          This is what you trained for.
         `,
         choices: [
-          { text: 'Head to the pitch.', next: 'pitch_day' },
+          { text: '"We lead with the people Xero serves — not the product."', next: 'people_first' },
+          { text: '"We need a bold global platform idea. Something unforgettable."', next: 'bold_platform' },
+          { text: '"Let\'s listen to customers in every market first."', next: 'global_research' },
         ],
       },
 
-      team_split: {
-        label: 'Open Plan — 10:05am',
+      people_first: {
+        label: '💡 THE BIG IDEA',
+        badge: 'FINAL QUEST',
+        xp: 15, dom: 15,
         text: `
-          You assign the typography explorations to Jamie, the colour deck to Marcus,
-          and focus on the centrepiece mark yourself.<br><br>
-          It comes together like clockwork. Better than any of you could have done alone.
-          By 2:45pm you have fifteen minutes to breathe — almost unheard of on pitch day.<br><br>
-          Priya walks over, looks at the finished deck, and says nothing for a moment.
-          <em>"This is what we do here,"</em> she says finally.
+          <div class="speech">
+            <span class="speaker">FORGE</span>
+            "Every Xero ad features a real business owner.
+            Their name. Their city. Their story."
+          </div>
+          UK: Anna, florist, London.<br>
+          US: Marcus, food truck, Chicago.<br>
+          AU: Lena, surf school, Byron Bay.<br>
+          NZ: Hemi, farm, Hawke's Bay.<br><br>
+          <strong>One platform. Infinite stories.</strong><br><br>
+          <div class="speech">
+            <span class="speaker">CMO</span>
+            "This isn't advertising. It's a movement."
+          </div>
         `,
         choices: [
-          { text: 'Head to the pitch.', next: 'pitch_great' },
+          { text: 'Go global. Launch it everywhere.', next: 'world_domination' },
         ],
       },
 
-      // ─── ENDINGS ───────────────────────────────
+      bold_platform: {
+        label: '💡 THE BIG IDEA',
+        badge: 'FINAL QUEST',
+        xp: 12, dom: 12,
+        text: `
+          <strong>"THE PEOPLE WHO RUN THE WORLD."</strong><br><br>
+          Not suits. Not banks. Not big corporations.<br>
+          The plumbers. The bakers. The designers.
+          The people who actually make life happen.<br><br>
+          <strong>Xero is theirs.</strong><br><br>
+          <div class="speech">
+            <span class="speaker">CMO</span>
+            "Global, but personal. Big, but human.
+            This feels right."
+          </div>
+        `,
+        choices: [
+          { text: 'Go global. Launch it everywhere.', next: 'world_domination' },
+        ],
+      },
 
-      pitch_great: {
-        label: 'The Vesper Group — 3:00pm',
+      global_research: {
+        label: '🌏 GLOBAL LISTENING TOUR',
+        badge: 'FINAL QUEST',
+        xp: 12, dom: 12,
+        text: `
+          You travel (virtually). You listen.<br><br>
+          London. Singapore. Denver. Auckland.<br>
+          Different languages. Different businesses.
+          Same feeling:<br><br>
+          <div class="speech">
+            <em>"Xero gives me control. For the first time
+            in my business life — I feel in control."</em>
+          </div>
+          <span class="pill pill-xp">+12 XP</span>
+          <span class="pill pill-green">UNIVERSAL TRUTH FOUND 🔓</span><br><br>
+          <strong>Control. Freedom. Confidence.</strong><br><br>
+          That's it. You've found the global platform idea.
+        `,
+        choices: [
+          { text: 'Build the global campaign around this insight.', next: 'world_domination' },
+        ],
+      },
+
+      // ══════════════════════════════════════════
+      //  ENDING — WORLD DOMINATION
+      // ══════════════════════════════════════════
+
+      world_domination: {
+        label: '🌏 THE WORLD — NOW',
+        badge: 'QUEST COMPLETE ✓',
         isEnding: true,
         endingClass: 'good',
-        endingTitle: 'The Foundry Way',
+        endingTitle: 'XERO WORLD DOMINATION ACHIEVED',
+        xp: 30, dom: 40,
         text: `
-          The client leans back in their chair and smiles — a slow, genuine smile.<br><br>
-          <em>"This is exactly what we were hoping for. Actually, it's more than that."</em><br><br>
-          The room exhales. Handshakes all round. On the walk back to the office
-          nobody says much — the good kind of quiet, the kind that follows something
-          you know was right.<br><br>
-          Back at your desk you find a new sticky note on your monitor:<br><br>
-          <em>"Welcome to The Foundry. You get it."</em>
-        `,
-      },
-
-      pitch_day: {
-        label: 'The Vesper Group — 3:00pm',
-        isEnding: true,
-        endingClass: 'neutral',
-        endingTitle: 'In the Bag',
-        text: `
-          The client nods along, asks a few questions,
-          requests a couple of tweaks. Nothing major.<br><br>
-          On the walk back Priya says, <em>"Not bad for a first day."</em><br><br>
-          You're pretty sure that's the highest compliment she gives. You'll take it.
-          You already know you're coming back tomorrow — and the day after that.
-        `,
-      },
-
-      pitch_weak: {
-        label: 'The Vesper Group — 3:00pm',
-        isEnding: true,
-        endingClass: 'bad',
-        endingTitle: 'The Nephew',
-        text: `
-          The client thanks you warmly and says they'll be in touch.<br><br>
-          Three days later, a polite email arrives. They've decided
-          to <em>"go in a different direction."</em><br><br>
-          The agency whispers have it that the client's nephew does Canva.<br><br>
-          You put the sticky note in your pocket — <em>"Don't panic"</em> —
-          and start sketching for next time. There's always a next time at The Foundry.
+          <span class="world-spin">🌏</span>
+          The campaign goes live. Everywhere. All at once.<br><br>
+          Times Square. Tube stations. Cricket grounds.
+          Football pitches. Every screen. Every feed. Every heart.<br><br>
+          <span class="pill pill-green">Xero subscriptions ↑ fastest growth in history</span><br>
+          <span class="pill pill-blue">Brand love score ↑ #1 in category globally</span><br><br>
+          The CEO calls The Foundry.<br><br>
+          <div class="speech">
+            <span class="speaker">CEO — Xero</span>
+            "You didn't just make great creative.
+            You helped us grow Xero."
+          </div>
+          <strong style="color:var(--xero-gold)">
+            FORGE places the magic iron down.<br>
+            The world is a little more Xero now.
+          </strong><br><br>
+          <em>Mission complete. 🏆</em>
         `,
       },
 
     };
 
     // ─────────────────────────────────────────────
-    //  GAME ENGINE
+    //  ENGINE
     // ─────────────────────────────────────────────
-    let history = [];
 
     function startGame() {
+      xp = 0; dom = 0; history = [];
+      gainXP(0); gainDom(0);
       document.getElementById('title-screen').style.display = 'none';
-      const card = document.getElementById('scene-card');
-      card.style.display = 'block';
-      history = [];
+      document.getElementById('scene-card').style.display  = 'block';
+      document.getElementById('xp-area').style.display     = 'block';
+      document.getElementById('domination-wrap').style.display = 'block';
       showScene('start');
     }
 
     function showScene(id) {
       const scene = scenes[id];
       if (!scene) return;
-
       history.push(id);
+
+      if (scene.xp)  gainXP(scene.xp);
+      if (scene.dom) gainDom(scene.dom);
 
       // Trail
       const trail = document.getElementById('trail');
       trail.innerHTML = '';
       history.forEach((_, i) => {
-        const dot = document.createElement('div');
-        dot.className = 'trail-dot' + (i === history.length - 1 ? ' current' : ' done');
-        trail.appendChild(dot);
+        const d = document.createElement('div');
+        d.className = 'trail-dot ' + (i === history.length - 1 ? 'current' : 'done');
+        trail.appendChild(d);
       });
 
-      // Label
-      document.getElementById('scene-label').textContent = scene.label;
+      // Header
+      document.getElementById('scene-label').textContent = scene.label || '';
+      document.getElementById('quest-badge').textContent = scene.badge || '';
 
       // Text
-      document.getElementById('scene-text').innerHTML = scene.text;
+      document.getElementById('scene-text').innerHTML = scene.text || '';
 
       // Choices / ending
       const choicesEl = document.getElementById('choices');
       choicesEl.innerHTML = '';
 
       if (scene.isEnding) {
-        const banner = document.createElement('div');
-        banner.className = 'ending-banner';
-        banner.textContent = 'Ending';
+        const eyebrow = document.createElement('div');
+        eyebrow.className = 'ending-eyebrow';
+        eyebrow.textContent = '— ENDING —';
 
         const title = document.createElement('div');
-        title.className = `ending-title ${scene.endingClass || ''}`;
-        title.textContent = scene.endingTitle;
+        title.className = 'ending-title ' + (scene.endingClass || '');
+        title.textContent = scene.endingTitle || '';
+
+        const stats = document.createElement('div');
+        stats.style.margin = '0.75rem 0';
+        stats.innerHTML =
+          `<span class="pill pill-xp">XP: ${xp}/100</span>` +
+          `<span class="pill pill-blue">DOMINATION: ${dom}%</span>`;
 
         const replay = document.createElement('button');
         replay.className = 'btn-primary';
-        replay.textContent = 'Play Again';
+        replay.textContent = '▶ PLAY AGAIN';
         replay.onclick = () => {
-          document.getElementById('title-screen').style.display = 'block';
-          document.getElementById('scene-card').style.display = 'none';
+          document.getElementById('title-screen').style.display  = 'block';
+          document.getElementById('scene-card').style.display    = 'none';
+          document.getElementById('xp-area').style.display       = 'none';
+          document.getElementById('domination-wrap').style.display = 'none';
         };
 
-        choicesEl.appendChild(banner);
+        choicesEl.appendChild(eyebrow);
         choicesEl.appendChild(title);
+        choicesEl.appendChild(stats);
         choicesEl.appendChild(replay);
       } else {
-        scene.choices.forEach(choice => {
+        (scene.choices || []).forEach(c => {
           const btn = document.createElement('button');
           btn.className = 'choice-btn';
-          btn.innerHTML = choice.text;
+          btn.innerHTML = c.text;
           btn.onclick = () => {
-            // Re-trigger animation
             const card = document.getElementById('scene-card');
             card.style.animation = 'none';
-            card.offsetHeight; // reflow
+            card.offsetHeight;
             card.style.animation = '';
-            showScene(choice.next);
+            showScene(c.next);
           };
           choicesEl.appendChild(btn);
         });
       }
 
-      // Scroll to top of card
       document.getElementById('scene-card').scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
   </script>
