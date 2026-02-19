@@ -16,7 +16,6 @@
       --xero-gold:       #FFD700;
       --xero-green:      #00C896;
       --xero-red:        #FF4455;
-      --xero-purple:     #6B4EFF;
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; image-rendering: pixelated; }
@@ -64,11 +63,7 @@
       flex-shrink: 0;
     }
 
-    .logo-text {
-      font-size: 7px;
-      color: var(--xero-light-blue);
-      line-height: 2;
-    }
+    .logo-text { font-size: 7px; color: var(--xero-light-blue); line-height: 2; }
     .logo-text strong { color: var(--xero-white); font-size: 9px; display: block; }
 
     /* XP panel */
@@ -87,20 +82,13 @@
       border: 2px solid var(--xero-blue);
       overflow: hidden;
     }
-    .pixel-bar-fill {
-      height: 100%;
-      transition: width 0.6s steps(20, end);
-    }
-    #xp-bar-fill   { background: var(--xero-gold);  width: 0%; }
-    #dom-bar-fill  { background: var(--xero-blue);  width: 0%; }
+    .pixel-bar-fill { height: 100%; transition: width 0.6s steps(20, end); }
+    #xp-bar-fill  { background: var(--xero-gold); width: 0%; }
+    #dom-bar-fill { background: var(--xero-blue); width: 0%; }
 
-    .bar-text {
-      font-size: 6px;
-      color: var(--xero-white);
-      margin-top: 2px;
-    }
+    .bar-text { font-size: 6px; color: var(--xero-white); margin-top: 2px; }
 
-    /* ─── DOMINATION METER ────────────────────── */
+    /* ─── DOMINATION METER ──────────────────── */
     #domination-wrap {
       display: none;
       width: 100%;
@@ -115,13 +103,92 @@
       color: var(--xero-blue);
       margin-bottom: 3px;
     }
-
     #dom-pct { color: var(--xero-gold); }
 
-    /* ─── GAME WRAP ───────────────────────────── */
+    /* ─── SPECIAL MOVES KIT ─────────────────── */
+    #moves-kit {
+      display: none;
+      width: 100%;
+      max-width: 740px;
+      margin-bottom: 1.25rem;
+    }
+    .moves-label {
+      font-size: 6px;
+      color: var(--xero-gold);
+      letter-spacing: 0.15em;
+      margin-bottom: 4px;
+    }
+    .moves-list {
+      display: flex;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+    }
+    .move-chip {
+      font-size: 6px;
+      border: 1px solid var(--xero-gold);
+      color: var(--xero-gold);
+      background: rgba(255,215,0,0.07);
+      padding: 3px 8px;
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+    .move-chip.earned { opacity: 1; }
+
+    /* ─── UNLOCK POPUP ──────────────────────── */
+    #move-unlock-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(5, 5, 15, 0.92);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+      animation: overlayFlash 0.2s steps(2, end);
+    }
+    @keyframes overlayFlash {
+      0%   { background: rgba(255, 215, 0, 0.2); }
+      100% { background: rgba(5, 5, 15, 0.92); }
+    }
+    .unlock-box {
+      text-align: center;
+      border: 4px solid var(--xero-gold);
+      box-shadow: 8px 8px 0 var(--xero-navy), 0 0 48px rgba(255,215,0,0.25);
+      background: var(--xero-dark);
+      padding: 2.5rem 2.5rem 2rem;
+      max-width: 420px;
+      width: 90%;
+      animation: pixelIn 0.2s steps(4, end);
+    }
+    .unlock-eyebrow {
+      font-size: 7px;
+      color: var(--xero-light-blue);
+      letter-spacing: 0.2em;
+      margin-bottom: 1rem;
+    }
+    .unlock-name {
+      font-size: clamp(12px, 2.5vw, 15px);
+      color: var(--xero-gold);
+      text-shadow: 3px 3px 0 rgba(0,0,0,0.6);
+      line-height: 1.5;
+      margin-bottom: 0.6rem;
+    }
+    .unlock-flavour {
+      font-size: 7px;
+      color: var(--xero-light-blue);
+      line-height: 2;
+      margin-bottom: 1rem;
+    }
+    .unlock-dismiss {
+      font-size: 7px;
+      color: var(--xero-navy);
+      letter-spacing: 0.1em;
+      animation: blink 0.8s step-end infinite;
+    }
+
+    /* ─── GAME WRAP ─────────────────────────── */
     #game { width: 100%; max-width: 740px; }
 
-    /* ─── TITLE SCREEN ────────────────────────── */
+    /* ─── TITLE SCREEN ──────────────────────── */
     #title-screen { text-align: center; padding: 2rem 1rem; }
 
     .char-sprite {
@@ -131,7 +198,6 @@
       animation: float 1.8s ease-in-out infinite;
       filter: drop-shadow(0 0 12px var(--xero-blue));
     }
-
     @keyframes float {
       0%, 100% { transform: translateY(0px); }
       50%       { transform: translateY(-10px); }
@@ -151,7 +217,6 @@
       line-height: 1.3;
       margin-bottom: 0.4rem;
     }
-
     .title-sub {
       font-size: clamp(9px, 2vw, 13px);
       color: var(--xero-gold);
@@ -159,22 +224,19 @@
       margin-bottom: 2rem;
     }
 
-    /* Quest map icons */
     .quest-map {
       display: flex;
       justify-content: center;
       gap: 1.5rem;
       flex-wrap: wrap;
       margin: 1.25rem auto;
-      max-width: 480px;
+      max-width: 520px;
     }
-
     .q-icon {
       text-align: center;
       font-size: 7px;
       color: var(--xero-navy);
-      opacity: 0.55;
-      transition: opacity 0.2s;
+      opacity: 0.5;
     }
     .q-icon .i { font-size: 1.5rem; display: block; margin-bottom: 0.3rem; }
     .q-icon.unlocked { color: var(--xero-light-blue); opacity: 1; }
@@ -187,18 +249,16 @@
       margin: 0 auto 2.5rem;
     }
 
-    /* Blink */
     .blink { animation: blink 1s step-end infinite; }
     @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
 
-    /* ─── PRIMARY BUTTON ──────────────────────── */
+    /* ─── PRIMARY BUTTON ────────────────────── */
     .btn-primary {
       display: inline-block;
       background: var(--xero-blue);
       color: var(--xero-darker);
       font-family: 'Press Start 2P', monospace;
       font-size: 10px;
-      font-weight: normal;
       border: none;
       padding: 0.9rem 2rem;
       cursor: pointer;
@@ -209,7 +269,7 @@
     .btn-primary:hover  { box-shadow: 3px 3px 0 var(--xero-navy); transform: translate(2px,2px); }
     .btn-primary:active { box-shadow: none; transform: translate(5px,5px); }
 
-    /* ─── SCENE CARD ──────────────────────────── */
+    /* ─── SCENE CARD ────────────────────────── */
     #scene-card {
       display: none;
       background: var(--xero-dark);
@@ -218,30 +278,22 @@
       padding: 1.75rem 1.75rem 1.5rem;
       animation: pixelIn 0.2s steps(4, end);
     }
-
     @keyframes pixelIn {
       0%   { opacity: 0; transform: scale(0.97); }
       100% { opacity: 1; transform: scale(1); }
     }
 
-    /* Trail dots */
-    #trail {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 5px;
-      margin-bottom: 1.25rem;
-    }
-
+    /* Trail */
+    #trail { display: flex; flex-wrap: wrap; gap: 5px; margin-bottom: 1.25rem; }
     .trail-dot {
-      width: 10px;
-      height: 10px;
+      width: 10px; height: 10px;
       background: var(--xero-navy);
       border: 2px solid #2a2a6a;
     }
     .trail-dot.done    { background: #2a2a6a; border-color: var(--xero-navy); }
     .trail-dot.current { background: var(--xero-blue); border-color: var(--xero-light-blue); }
 
-    /* Quest header row */
+    /* Quest header */
     .quest-header {
       display: flex;
       align-items: flex-start;
@@ -251,7 +303,6 @@
       padding-bottom: 0.75rem;
       border-bottom: 2px solid var(--xero-navy);
     }
-
     .scene-label {
       font-size: 8px;
       color: var(--xero-blue);
@@ -259,7 +310,6 @@
       line-height: 1.7;
       flex: 1;
     }
-
     .quest-badge {
       font-size: 6px;
       color: var(--xero-gold);
@@ -277,8 +327,7 @@
       color: var(--xero-white);
       margin-bottom: 1.75rem;
     }
-
-    .scene-text em   { color: var(--xero-light-blue); font-style: normal; }
+    .scene-text em     { color: var(--xero-light-blue); font-style: normal; }
     .scene-text strong { color: var(--xero-gold); }
 
     /* Speaker block */
@@ -290,7 +339,6 @@
       font-size: 9px;
       line-height: 2.2;
     }
-
     .speaker {
       font-size: 7px;
       color: var(--xero-gold);
@@ -298,7 +346,7 @@
       margin-bottom: 0.3rem;
     }
 
-    /* Stat pill */
+    /* Stat pills */
     .pill {
       display: inline-block;
       font-size: 7px;
@@ -306,17 +354,17 @@
       padding: 2px 7px;
       margin: 0.15rem 0.25rem 0.15rem 0;
     }
-    .pill-xp    { border-color: var(--xero-gold);   color: var(--xero-gold); }
-    .pill-green { border-color: var(--xero-green);  color: var(--xero-green); }
-    .pill-blue  { border-color: var(--xero-blue);   color: var(--xero-blue); }
-    .pill-red   { border-color: var(--xero-red);    color: var(--xero-red); }
+    .pill-xp    { border-color: var(--xero-gold);  color: var(--xero-gold); }
+    .pill-green { border-color: var(--xero-green); color: var(--xero-green); }
+    .pill-blue  { border-color: var(--xero-blue);  color: var(--xero-blue); }
+    .pill-red   { border-color: var(--xero-red);   color: var(--xero-red); }
 
     /* Stars */
     .stars { color: var(--xero-gold); font-size: 1.2rem; letter-spacing: 0.4rem; display: block; margin: 0.75rem 0; }
 
     hr.divider { border: none; border-top: 2px solid var(--xero-navy); margin: 1.25rem 0; }
 
-    /* ─── CHOICES ──────────────────────────────── */
+    /* ─── CHOICES ───────────────────────────── */
     #choices { display: flex; flex-direction: column; gap: 0.7rem; }
 
     .choice-btn {
@@ -332,7 +380,6 @@
       position: relative;
       transition: none;
     }
-
     .choice-btn::before {
       content: '▶';
       font-size: 7px;
@@ -342,7 +389,6 @@
       top: 50%;
       transform: translateY(-50%);
     }
-
     .choice-btn:hover {
       background: var(--xero-blue);
       border-color: var(--xero-white);
@@ -350,14 +396,37 @@
     }
     .choice-btn:hover::before { color: var(--xero-darker); }
 
-    /* ─── ENDINGS ─────────────────────────────── */
+    /* Special move choice buttons */
+    .choice-btn.choice-special {
+      background: rgba(255, 215, 0, 0.06);
+      border: 2px solid var(--xero-gold);
+      color: var(--xero-gold);
+    }
+    .choice-btn.choice-special::before { color: var(--xero-gold); }
+    .choice-btn.choice-special:hover {
+      background: var(--xero-gold);
+      border-color: var(--xero-white);
+      color: var(--xero-darker);
+    }
+    .choice-btn.choice-special:hover::before { color: var(--xero-darker); }
+
+    /* Separator between normal and special choices */
+    .choices-sep {
+      font-size: 6px;
+      color: var(--xero-gold);
+      letter-spacing: 0.2em;
+      text-align: center;
+      padding: 0.25rem 0;
+      opacity: 0.7;
+    }
+
+    /* ─── ENDINGS ───────────────────────────── */
     .ending-eyebrow {
       font-size: 7px;
       color: var(--xero-light-blue);
       letter-spacing: 0.25em;
       margin-bottom: 0.4rem;
     }
-
     .ending-title {
       font-size: clamp(12px, 2.5vw, 18px);
       line-height: 1.4;
@@ -365,8 +434,8 @@
       margin-bottom: 1.25rem;
     }
     .ending-title.good    { color: var(--xero-green); }
-    .ending-title.neutral { color: var(--xero-blue);  }
-    .ending-title.bad     { color: var(--xero-red);   }
+    .ending-title.neutral { color: var(--xero-blue); }
+    .ending-title.bad     { color: var(--xero-red); }
 
     .world-spin {
       font-size: 3rem;
@@ -378,7 +447,7 @@
     }
     @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
 
-    /* ─── RESPONSIVE ──────────────────────────── */
+    /* ─── RESPONSIVE ────────────────────────── */
     @media (max-width: 480px) {
       body { font-size: 9px; padding: 1rem 0.5rem 4rem; }
       #scene-card { padding: 1.25rem; }
@@ -418,6 +487,16 @@
     </div>
   </div>
 
+  <!-- ─── SPECIAL MOVES KIT ────────────────────────── -->
+  <div id="moves-kit">
+    <div class="moves-label">⚒ FORGE KIT — SPECIAL MOVES</div>
+    <div class="moves-list">
+      <div class="move-chip" id="chip-TEMPER_THE_BOND">TEMPER THE BOND</div>
+      <div class="move-chip" id="chip-PRECAST">PRECAST</div>
+      <div class="move-chip" id="chip-MELT_THE_DEADLINE">MELT THE DEADLINE</div>
+    </div>
+  </div>
+
   <!-- ─── GAME ─────────────────────────────────────── -->
   <div id="game">
 
@@ -430,8 +509,8 @@
 
       <div class="quest-map">
         <div class="q-icon unlocked"><span class="i">📣</span>MARKETING</div>
-        <div class="q-icon"><span class="i">💡</span>PRODUCT</div>
-        <div class="q-icon"><span class="i">🌏</span>GLOBAL HQ</div>
+        <div class="q-icon"><span class="i">🚀</span>LAUNCH</div>
+        <div class="q-icon"><span class="i">🌏</span>THE BOARDROOM</div>
       </div>
 
       <p class="intro-blurb">
@@ -441,6 +520,7 @@
         Armed with a magic iron and unlimited creative courage,<br>
         you must find Xero's stakeholders, hear their problems,<br>
         and help them level up their thinking.<br><br>
+        Unlock special moves. Earn the room.<br><br>
         <strong style="color:var(--xero-gold)">
           The mission: Xero World Domination.
         </strong>
@@ -470,6 +550,22 @@
     let xp = 0;
     let dom = 0;
     let history = [];
+    const specialMoves = new Set();
+
+    const MOVE_DEFS = {
+      TEMPER_THE_BOND: {
+        name: 'TEMPER THE BOND',
+        flavour: 'You earned their trust before you needed it.\nLike tempering metal — strength built before the pressure comes.',
+      },
+      PRECAST: {
+        name: 'PRECAST',
+        flavour: 'You prepared the mould before the metal arrived.\nArrive with solutions to problems they didn\'t know had a name.',
+      },
+      MELT_THE_DEADLINE: {
+        name: 'MELT THE DEADLINE',
+        flavour: 'Time bends when the forge is hot.\nFocused creative heat dissolves the impossible timeline.',
+      },
+    };
 
     function gainXP(n) {
       xp = Math.min(100, xp + n);
@@ -483,14 +579,41 @@
       document.getElementById('dom-pct').textContent = dom + '%';
     }
 
+    function unlockMove(moveId) {
+      if (specialMoves.has(moveId)) return;
+      specialMoves.add(moveId);
+
+      // Light up the kit chip
+      const chip = document.getElementById('chip-' + moveId);
+      if (chip) chip.classList.add('earned');
+
+      // Show the unlock popup
+      const def = MOVE_DEFS[moveId];
+      if (!def) return;
+
+      const overlay = document.createElement('div');
+      overlay.id = 'move-unlock-overlay';
+      overlay.innerHTML = `
+        <div class="unlock-box">
+          <div class="unlock-eyebrow">⚒ SPECIAL MOVE FORGED</div>
+          <div class="unlock-name">${def.name}</div>
+          <div class="unlock-flavour">${def.flavour.replace(/\n/g, '<br>')}</div>
+          <div class="unlock-dismiss blink">— tap anywhere to continue —</div>
+        </div>
+      `;
+      overlay.addEventListener('click', () => overlay.remove());
+      document.body.appendChild(overlay);
+      setTimeout(() => { if (overlay.parentNode) overlay.remove(); }, 4000);
+    }
+
     // ─────────────────────────────────────────────
     //  SCENES
     // ─────────────────────────────────────────────
     const scenes = {
 
-      // ══════════════════════════════════════════
+      // ════════════════════════════════════════════
       //  QUEST 1 — MARKETING
-      // ══════════════════════════════════════════
+      // ════════════════════════════════════════════
 
       start: {
         label: '📍 THE FOUNDRY — MORNING',
@@ -528,7 +651,7 @@
           You read every page. All 47 of them.<br><br>
           By page 23, buried in a footnote, you find it:<br><br>
           <div class="speech">
-            <em>"Ultimately, Xero frees small business owners<br>
+            <em>"Ultimately, Xero frees small business owners
             to do what they love."</em>
           </div>
           <strong>That's it. That's everything.</strong><br><br>
@@ -537,7 +660,6 @@
             <span class="speaker">FORGE</span>
             "Your campaign is on page 23."
           </div>
-          Hamish stares at it. Then at you. Then back at it.<br><br>
           <div class="speech">
             <span class="speaker">HAMISH</span>
             "...I wrote that at midnight.
@@ -554,6 +676,7 @@
         label: '📋 THE WHITEBOARD — 10AM',
         badge: 'QUEST 1: MARKETING',
         xp: 10, dom: 5,
+        unlocksMove: 'TEMPER_THE_BOND',
         text: `
           Hamish pauses mid-pace.<br><br>
           <div class="speech">
@@ -612,7 +735,6 @@
           Across every channel. Every market. Every screen.<br><br>
           <span class="pill pill-green">Open rates ↑ 34%</span>
           <span class="pill pill-green">Trial signups ↑ 22%</span><br><br>
-          Hamish cries a little. Just a little.<br><br>
           <div class="speech">
             <span class="speaker">HAMISH</span>
             "FORGE. You didn't just fix my brief.
@@ -638,7 +760,7 @@
           <div class="speech">
             <em>"Xero — freedom for the people who make the world run."</em>
           </div>
-          Hamish didn't just hear it. <strong>He built it.</strong><br><br>
+          Hamish didn't just hear it. <strong>He built it.</strong>
           That's the difference.<br><br>
           <strong>★ STAKEHOLDER LEVELLED UP: HAMISH ★</strong>
           <span class="stars">★ ★ ☆</span>
@@ -649,233 +771,386 @@
         ],
       },
 
-      // ══════════════════════════════════════════
-      //  QUEST 2 — PRODUCT
-      // ══════════════════════════════════════════
+      // ════════════════════════════════════════════
+      //  QUEST 2 — XERO FLOW CAMPAIGN LAUNCH
+      // ════════════════════════════════════════════
 
       quest2_start: {
-        label: '📍 XERO HQ — LATER THAT DAY',
-        badge: 'QUEST 2: PRODUCT',
+        label: '📍 XERO HQ — PRODUCT FLOOR',
+        badge: 'QUEST 2: PRODUCT LAUNCH',
         xp: 5, dom: 5,
         text: `
           <em>🔔 NEW QUEST UNLOCKED</em><br><br>
-          <strong>PRIYA</strong> from Product Design is next.<br><br>
-          She's launching a new feature — <em>SmartRecon</em>.
-          The launch deck is, in her words:<br><br>
+          <strong>MAYA</strong>, Head of Product, intercepts you
+          near the lifts. She's carrying two laptops.<br><br>
           <div class="speech">
-            <span class="speaker">PRIYA — Senior Product Designer</span>
-            "Technically correct. Emotionally dead.
-            62 slides of nothing."
+            <span class="speaker">MAYA — Head of Product, Xero</span>
+            "FORGE. Good. We're launching Xero Flow —
+            cash flow forecasting for small businesses.
+            Six weeks. Exec sponsor is already nervous.
+            I need a campaign that makes people feel something."
           </div>
-          She slides it across.
-          Everything is accurate. Nothing is interesting.<br><br>
-          FORGE, your iron glows. This is your moment.
+          She slides across a product one-pager.
+          The feature is genuinely brilliant.
+          The brief is not.<br><br>
+          Your iron hums. There's something worth finding here.
         `,
         choices: [
-          { text: '"Let\'s cut this to 10 slides and lead with a human story."', next: 'cut_deck' },
-          { text: '"What does SmartRecon FEEL like for a real Xero customer?"', next: 'empathy_quest' },
-          { text: '"I\'ll upgrade the visuals — that should fix it."', next: 'just_visuals' },
+          { text: '"Tell me about the customers who need this most."', next: 'q2_listen' },
+          { text: '"Let\'s lead with the problem, not the product."', next: 'q2_strategy' },
+          { text: '"Walk me through the core features first."', next: 'q2_features' },
         ],
       },
 
-      empathy_quest: {
-        label: '🔍 EMPATHY MODE ACTIVATED',
-        badge: 'QUEST 2: PRODUCT',
-        xp: 15, dom: 10,
+      q2_listen: {
+        label: '🔍 LISTENING MODE ACTIVATED',
+        badge: 'QUEST 2: PRODUCT LAUNCH',
+        xp: 10, dom: 5,
         text: `
-          You ring Jenny — a real Xero customer.
-          She runs a three-person catering company in Christchurch.<br><br>
+          You go quiet. Maya talks.<br><br>
+          She describes SMB owners who can't see past next month —
+          who make payroll decisions on gut feel,
+          who lie awake at 2am running cash scenarios in their head
+          on old spreadsheets that don't talk to anything.<br><br>
+          You ask her for three names. She gives you five.<br><br>
           <div class="speech">
-            <span class="speaker">JENNY — Xero Customer</span>
-            "Before SmartRecon I was doing the books at midnight
-            every Sunday. Now it takes 20 minutes.
-            I got Sunday evenings back.
-            I went to my daughter's recital."
+            <span class="speaker">FORGE</span>
+            "Let's call one of them right now."
+          </div>
+          Maya blinks. Nobody has ever asked for that before.
+        `,
+        choices: [
+          { text: 'Pick up the phone. Call David in Perth.', next: 'q2_research' },
+        ],
+      },
+
+      q2_research: {
+        label: '📞 CUSTOMER CALL — REAL TALK',
+        badge: 'QUEST 2: PRODUCT LAUNCH',
+        xp: 15, dom: 10,
+        unlocksMove: 'PRECAST',
+        text: `
+          David runs a 12-person fit-out business in Perth.<br><br>
+          <div class="speech">
+            <span class="speaker">DAVID — Xero Customer, Perth</span>
+            "Every Sunday night I build the same spreadsheet.
+            Manually. Just to figure out if I can make Friday's payroll.
+            I've been doing it for three years.
+            I didn't know there was another way."
           </div>
           <span class="pill pill-xp">+15 XP</span>
-          <span class="pill pill-green">HUMAN INSIGHT UNLOCKED 🔓</span><br><br>
-          You don't need 62 slides.
-          <strong>You need Jenny's story.</strong>
+          <span class="pill pill-green">CUSTOMER TRUTH UNLOCKED 🔓</span><br><br>
+          You hang up and look at Maya.<br><br>
+          <div class="speech">
+            <span class="speaker">FORGE</span>
+            "The campaign isn't about cash flow forecasting.
+            It's about the Sunday night spreadsheet.
+            We name the problem they didn't know had a name."
+          </div>
+          Maya goes very still. Then she writes it on the whiteboard.
         `,
         choices: [
-          { text: 'Rebuild the deck around Jenny\'s story.', next: 'deck_rebuilt' },
+          { text: '"The campaign solves the problem before they ask for it."', next: 'q2_deadline_hit' },
         ],
       },
 
-      cut_deck: {
-        label: '✂️ THE EDIT SESSION',
-        badge: 'QUEST 2: PRODUCT',
+      q2_strategy: {
+        label: '💡 REFRAMING SESSION',
+        badge: 'QUEST 2: PRODUCT LAUNCH',
         xp: 8, dom: 5,
         text: `
-          62 slides become 10.<br><br>
-          Slide 1: One customer. One moment. One feeling.<br>
-          Slides 2–9: The solution, shown — not told.<br>
-          Slide 10: The future.<br><br>
-          Priya stares at it.<br><br>
+          You flip the brief.<br><br>
+          Instead of "here's our new feature" —
+          it becomes "here's the cash crisis keeping 60% of small
+          businesses up at night. And here's the cure."<br><br>
+          Maya lights up. <em>Then her phone rings.</em><br><br>
           <div class="speech">
-            <span class="speaker">PRIYA</span>
-            "It's better. But something's still missing."
+            <span class="speaker">MAYA</span>
+            "That's the exec sponsor. The launch window
+            just moved up. We now have four weeks, not six."
           </div>
-          She's right. It needs the human truth.
+          She looks at you. You look at your iron.
+          It's glowing. That's a good sign.
         `,
         choices: [
-          { text: '"What does SmartRecon FEEL like for a real Xero customer?"', next: 'empathy_quest' },
+          { text: '"Four weeks is enough. Let\'s triage right now."', next: 'q2_deadline_hit' },
+          { text: '"Get the narrative locked first, then the timing."', next: 'q2_deadline_hit' },
         ],
       },
 
-      just_visuals: {
-        label: '🎨 DESIGN BAND-AID',
-        badge: 'QUEST 2: PRODUCT',
+      q2_features: {
+        label: '📊 FEATURE TOUR',
+        badge: 'QUEST 2: PRODUCT LAUNCH',
         xp: 2, dom: 0,
         text: `
-          New charts. New colours. New icons.<br><br>
-          The deck is now a beautiful corpse.<br><br>
-          Priya is polite about it. The team is polite.
-          Everyone is very, very polite.<br><br>
+          Maya walks you through the interface.<br><br>
+          Real-time forecasting. Cash runway visualisation.
+          Scenario modelling. Automated reconciliation.<br><br>
+          It's powerful. But as she talks, you feel the energy
+          drain from the room. This is engineering thinking,
+          not campaign thinking.<br><br>
+          <span class="pill pill-red">⚠ FEATURE THINKING DETECTED</span><br><br>
+          Features tell. Stories sell.<br><br>
           <div class="speech">
-            <span class="speaker">PRIYA</span>
-            "FORGE... it looks better.
-            But it still doesn't say anything."
+            <span class="speaker">FORGE</span>
+            "Let's start over. Tell me about the customers."
           </div>
-          <span class="pill pill-red">⚠ COSMETIC FIX — NO XP BONUS</span><br><br>
-          Great creative isn't decoration.
-          It's the right idea, beautifully expressed.
         `,
         choices: [
-          { text: 'Go deeper — find the human story first.', next: 'empathy_quest' },
+          { text: '"Tell me about the customers who need this most."', next: 'q2_listen' },
         ],
       },
 
-      deck_rebuilt: {
-        label: '🚀 LAUNCH DAY — SMARTRECON',
+      q2_deadline_hit: {
+        label: '⏱ THE CLOCK IS TICKING',
+        badge: 'QUEST 2: PRODUCT LAUNCH',
+        xp: 12, dom: 8,
+        unlocksMove: 'MELT_THE_DEADLINE',
+        text: `
+          Four weeks out. The exec sponsor wants a full
+          launch plan on her desk tomorrow morning.<br><br>
+          Your team has: a half-finished campaign concept,
+          a case study not yet signed off,
+          and a media brief needing three rounds of legal.<br><br>
+          Your iron glows hot. You pull out a blank sheet
+          and map the critical path in twenty minutes.<br><br>
+          You cut two deliverables that were nice-to-have.
+          You move the case study to a post-launch content series.
+          Tomorrow's presentation covers exactly three things:
+          <em>the idea, the proof, the plan.</em><br><br>
+          <span class="pill pill-green">DEADLINE DISSOLVED ✓</span>
+          <span class="pill pill-xp">+12 XP</span>
+        `,
+        choices: [
+          { text: 'Present to the exec sponsor tomorrow.', next: 'q2_complete' },
+        ],
+      },
+
+      q2_complete: {
+        label: '🚀 XERO FLOW — LAUNCH WEEK',
         badge: 'QUEST 2: COMPLETE ✓',
         xp: 20, dom: 20,
         text: `
-          The presentation opens with Jenny's story.
-          No data. No product screenshots. Just:<br><br>
+          The campaign goes live.<br><br>
+          <strong>"The Sunday Night Problem."</strong><br><br>
+          A 60-second film: one business owner, one spreadsheet,
+          one Sunday night. Then — Xero Flow.
+          No voiceover. No product demo. Just relief.<br><br>
+          <span class="pill pill-green">Awareness ↑ 38%</span>
+          <span class="pill pill-green">Trial signups ↑ 290% vs forecast</span><br><br>
+          Maya's exec sponsor sends a Slack to the CEO.
+          It mentions The Foundry by name.<br><br>
           <div class="speech">
-            <em>"I got Sunday evenings back."</em>
+            <span class="speaker">MAYA</span>
+            "FORGE. You didn't just launch a campaign.
+            You changed how I think about product storytelling."
           </div>
-          The room is silent for three seconds.
-          Then the applause starts.<br><br>
-          <span class="pill pill-green">SmartRecon adoption ↑ 41% above forecast</span><br><br>
-          Priya gets a standing ovation.<br><br>
-          <div class="speech">
-            <span class="speaker">PRIYA</span>
-            "FORGE. You didn't just fix my deck.
-            You taught me to think differently."
-          </div>
-          <strong>★ STAKEHOLDER LEVELLED UP: PRIYA ★</strong>
+          <strong>★ STAKEHOLDER LEVELLED UP: MAYA ★</strong>
           <span class="stars">★ ★ ★</span>
         `,
         choices: [
-          { text: '→ Accept final quest.', next: 'quest3_start' },
+          { text: '→ Accept the final quest.', next: 'quest3_start' },
         ],
       },
 
-      // ══════════════════════════════════════════
-      //  QUEST 3 — WORLD DOMINATION
-      // ══════════════════════════════════════════
+      // ════════════════════════════════════════════
+      //  QUEST 3 — THE BOARDROOM
+      // ════════════════════════════════════════════
 
       quest3_start: {
-        label: '🌏 GLOBAL HQ — THE FINAL QUEST',
+        label: '🌏 XERO GLOBAL HQ — THE BOARDROOM',
         badge: 'FINAL QUEST',
-        xp: 10, dom: 10,
+        xp: 5, dom: 5,
         text: `
           <em>🔔 FINAL QUEST UNLOCKED 🔔</em><br><br>
-          A video call connects.
-          It's the <strong>CMO</strong>. The full leadership team.
-          All eyes on FORGE.<br><br>
+          The room is full. Not just Maya and Hamish.<br><br>
+          At the head of the table:
+          <strong>SUKHINDER SINGH CASSIDY</strong>, CEO of Xero.
+          Shareholders on the video wall. The CFO. The board.
+          Someone from the ASX press pool is outside.<br><br>
+          Sukhinder nods at you.<br><br>
           <div class="speech">
-            <span class="speaker">CMO — Global HQ</span>
-            "FORGE. We've seen what you've done for Hamish.
-            For Priya. Now we need something bigger.
-            Much bigger."
+            <span class="speaker">SUKHINDER SINGH CASSIDY — CEO, Xero</span>
+            "FORGE. The room is yours.
+            Tell us the story of where Xero goes next."
           </div>
-          The brief appears on screen:<br><br>
-          <strong>"Make Xero the most loved brand in small business. Globally."</strong><br><br>
-          The magic iron trembles in your hand.
-          This is what you trained for.
+          Your iron is warm in your hand.
+          This is the moment it was forged for.<br><br>
+          <em>Check your Forge Kit — special moves available.</em>
         `,
         choices: [
-          { text: '"We lead with the people Xero serves — not the product."', next: 'people_first' },
-          { text: '"We need a bold global platform idea. Something unforgettable."', next: 'bold_platform' },
-          { text: '"Let\'s listen to customers in every market first."', next: 'global_research' },
+          { text: '"I want to start with a customer, not a slide."', next: 'q3_open_human' },
+          { text: '"Here\'s what the numbers say about Xero\'s opportunity."', next: 'q3_open_data' },
+          { text: 'TEMPER THE BOND — Call on the trust you built.', next: 'q3_temper', requiresMove: 'TEMPER_THE_BOND', isSpecial: true },
+          { text: 'PRECAST — Present the problem before they ask.', next: 'q3_precast', requiresMove: 'PRECAST', isSpecial: true },
+          { text: 'MELT THE DEADLINE — Compress the vision into one minute.', next: 'q3_melt', requiresMove: 'MELT_THE_DEADLINE', isSpecial: true },
         ],
       },
 
-      people_first: {
-        label: '💡 THE BIG IDEA',
+      q3_open_human: {
+        label: '🎬 THE HUMAN OPEN',
         badge: 'FINAL QUEST',
-        xp: 15, dom: 15,
+        xp: 12, dom: 12,
+        text: `
+          You press play.<br><br>
+          45 seconds. No music. No voiceover.<br>
+          Just David from Perth at his kitchen table, Sunday night,
+          the spreadsheet open. Then his face when it closes.<br><br>
+          <div class="speech">
+            <span class="speaker">DAVID — on screen</span>
+            "I didn't know this problem had a solution."
+          </div>
+          The boardroom is silent.<br><br>
+          Sukhinder leans forward. Her pen goes down.
+          That's the signal. You have the room.
+        `,
+        choices: [
+          { text: 'Lay out the global vision.', next: 'q3_sukhinder_responds' },
+        ],
+      },
+
+      q3_open_data: {
+        label: '📊 THE DATA OPEN',
+        badge: 'FINAL QUEST',
+        xp: 8, dom: 8,
         text: `
           <div class="speech">
             <span class="speaker">FORGE</span>
-            "Every Xero ad features a real business owner.
-            Their name. Their city. Their story."
+            "660 million small businesses globally.
+            82% cite cash flow as their top threat.
+            Zero of them grew up wanting to do their own books."
           </div>
-          UK: Anna, florist, London.<br>
-          US: Marcus, food truck, Chicago.<br>
-          AU: Lena, surf school, Byron Bay.<br>
-          NZ: Hemi, farm, Hawke's Bay.<br><br>
-          <strong>One platform. Infinite stories.</strong><br><br>
-          <div class="speech">
-            <span class="speaker">CMO</span>
-            "This isn't advertising. It's a movement."
-          </div>
+          The numbers land. The CFO nods.
+          But Sukhinder is watching the shareholders —
+          and shareholders watch for feeling, not facts.<br><br>
+          You sense you need to anchor this in something human, fast.
         `,
         choices: [
-          { text: 'Go global. Launch it everywhere.', next: 'world_domination' },
+          { text: '"Let me show you what that looks like for one person."', next: 'q3_sukhinder_responds' },
         ],
       },
 
-      bold_platform: {
-        label: '💡 THE BIG IDEA',
-        badge: 'FINAL QUEST',
-        xp: 12, dom: 12,
+      q3_temper: {
+        label: '🤝 THE TRUST PLAY',
+        badge: 'FINAL QUEST — SPECIAL MOVE',
+        xp: 20, dom: 22,
         text: `
-          <strong>"THE PEOPLE WHO RUN THE WORLD."</strong><br><br>
-          Not suits. Not banks. Not big corporations.<br>
-          The plumbers. The bakers. The designers.
-          The people who actually make life happen.<br><br>
-          <strong>Xero is theirs.</strong><br><br>
+          You look directly at Sukhinder.<br><br>
           <div class="speech">
-            <span class="speaker">CMO</span>
-            "Global, but personal. Big, but human.
-            This feels right."
+            <span class="speaker">FORGE</span>
+            "When Hamish came to The Foundry with a 47-page brief
+            and a two-week deadline, you didn't know us yet.
+            We had to earn the right to simplify.
+            We did. And every campaign since has been built
+            on the same principle:<br><br>
+            Earn the trust. Then lead."
           </div>
+          You pause.<br><br>
+          <div class="speech">
+            <span class="speaker">FORGE</span>
+            "Today I'm asking you to trust The Foundry
+            with Xero's global story."
+          </div>
+          The shareholders look at Sukhinder.
+          She is smiling — a small, real smile.
+          The kind that closes deals.
         `,
         choices: [
-          { text: 'Go global. Launch it everywhere.', next: 'world_domination' },
+          { text: 'Present the world domination vision.', next: 'q3_sukhinder_responds' },
         ],
       },
 
-      global_research: {
-        label: '🌏 GLOBAL LISTENING TOUR',
-        badge: 'FINAL QUEST',
-        xp: 12, dom: 12,
+      q3_precast: {
+        label: '🔮 THE PROBLEM BEFORE THE QUESTION',
+        badge: 'FINAL QUEST — SPECIAL MOVE',
+        xp: 20, dom: 25,
         text: `
-          You travel (virtually). You listen.<br><br>
-          London. Singapore. Denver. Auckland.<br>
-          Different languages. Different businesses.
-          Same feeling:<br><br>
+          You open with a question.<br><br>
           <div class="speech">
-            <em>"Xero gives me control. For the first time
-            in my business life — I feel in control."</em>
+            <span class="speaker">FORGE</span>
+            "Before the strategy — I want to surface something.
+            Every SMB owner in this room, or who is your customer,
+            has had a 2am moment. The spreadsheet that doesn't
+            add up, the payroll that's on Friday."
           </div>
-          <span class="pill pill-xp">+12 XP</span>
-          <span class="pill pill-green">UNIVERSAL TRUTH FOUND 🔓</span><br><br>
-          <strong>Control. Freedom. Confidence.</strong><br><br>
-          That's it. You've found the global platform idea.
+          You pause. You let it land.<br><br>
+          <div class="speech">
+            <span class="speaker">FORGE</span>
+            "Nobody was talking about that problem publicly.
+            Xero Flow didn't just launch a feature.
+            It launched a category.
+            And we named it before your competitors knew it existed."
+          </div>
+          <span class="pill pill-gold" style="border-color:var(--xero-gold);color:var(--xero-gold)">
+            ⚒ PRECAST ACTIVATED
+          </span><br><br>
+          Sukhinder writes something on her notepad.
+          She underlines it twice.
         `,
         choices: [
-          { text: 'Build the global campaign around this insight.', next: 'world_domination' },
+          { text: 'Show them the global scale.', next: 'q3_sukhinder_responds' },
         ],
       },
 
-      // ══════════════════════════════════════════
+      q3_melt: {
+        label: '⏱ ONE MINUTE. ONE VISION.',
+        badge: 'FINAL QUEST — SPECIAL MOVE',
+        xp: 20, dom: 20,
+        text: `
+          <div class="speech">
+            <span class="speaker">FORGE</span>
+            "I have one minute and one slide."
+          </div>
+          Everyone looks up.<br><br>
+          The slide is blank except for three words:<br><br>
+          <strong>FREEDOM. CONTROL. CONFIDENCE.</strong><br><br>
+          <div class="speech">
+            <span class="speaker">FORGE</span>
+            "These are the three things 660 million small business
+            owners want from their financial tools.
+            Xero is the only brand that can credibly own
+            all three. Globally.
+            Here's how we get there in 18 months."
+          </div>
+          The CFO glances at her watch — then puts it back down.
+          <span class="pill pill-green">⚒ DEADLINE MELTED ✓</span>
+        `,
+        choices: [
+          { text: 'Walk them through the 18-month plan.', next: 'q3_sukhinder_responds' },
+        ],
+      },
+
+      q3_sukhinder_responds: {
+        label: '👑 SUKHINDER SPEAKS',
+        badge: 'FINAL QUEST',
+        xp: 10, dom: 15,
+        text: `
+          Sukhinder stands.<br><br>
+          She doesn't look at her notes.<br><br>
+          <div class="speech">
+            <span class="speaker">SUKHINDER SINGH CASSIDY</span>
+            "I've seen a lot of presentations in this room.
+            What FORGE just did isn't a campaign pitch.
+            It's a proof of concept for how Xero thinks about
+            its brand."
+          </div>
+          She turns to the board.<br><br>
+          <div class="speech">
+            <span class="speaker">SUKHINDER SINGH CASSIDY</span>
+            "I want The Foundry leading the global brand strategy.
+            Not advising it. Leading it."
+          </div>
+          The vote is unanimous.<br><br>
+          The shareholders applaud.
+        `,
+        choices: [
+          { text: '→ Accept the mission.', next: 'world_domination' },
+        ],
+      },
+
+      // ════════════════════════════════════════════
       //  ENDING — WORLD DOMINATION
-      // ══════════════════════════════════════════
+      // ════════════════════════════════════════════
 
       world_domination: {
         label: '🌏 THE WORLD — NOW',
@@ -886,20 +1161,22 @@
         xp: 30, dom: 40,
         text: `
           <span class="world-spin">🌏</span>
-          The campaign goes live. Everywhere. All at once.<br><br>
+          The Foundry leads the global brand strategy.
+          The campaign goes everywhere. All at once.<br><br>
           Times Square. Tube stations. Cricket grounds.
-          Football pitches. Every screen. Every feed. Every heart.<br><br>
+          Football pitches. Every feed. Every screen. Every heart.<br><br>
           <span class="pill pill-green">Xero subscriptions ↑ fastest growth in history</span><br>
-          <span class="pill pill-blue">Brand love score ↑ #1 in category globally</span><br><br>
-          The CEO calls The Foundry.<br><br>
+          <span class="pill pill-blue">Brand love ↑ #1 in category, 12 markets</span><br>
+          <span class="pill pill-xp">Sunday Night Spreadsheet → cultural moment</span><br><br>
           <div class="speech">
-            <span class="speaker">CEO — Xero</span>
+            <span class="speaker">SUKHINDER SINGH CASSIDY — CEO, Xero</span>
             "You didn't just make great creative.
-            You helped us grow Xero."
+            You showed the world what Xero stands for."
           </div>
+          The shareholders rejoice. The ASX reacts.
+          The world is a little more Xero now.<br><br>
           <strong style="color:var(--xero-gold)">
-            FORGE places the magic iron down.<br>
-            The world is a little more Xero now.
+            FORGE places the magic iron down.
           </strong><br><br>
           <em>Mission complete. 🏆</em>
         `,
@@ -913,11 +1190,15 @@
 
     function startGame() {
       xp = 0; dom = 0; history = [];
+      specialMoves.clear();
+      document.querySelectorAll('.move-chip').forEach(c => c.classList.remove('earned'));
       gainXP(0); gainDom(0);
-      document.getElementById('title-screen').style.display = 'none';
-      document.getElementById('scene-card').style.display  = 'block';
-      document.getElementById('xp-area').style.display     = 'block';
+
+      document.getElementById('title-screen').style.display    = 'none';
+      document.getElementById('scene-card').style.display      = 'block';
+      document.getElementById('xp-area').style.display         = 'block';
       document.getElementById('domination-wrap').style.display = 'block';
+      document.getElementById('moves-kit').style.display       = 'block';
       showScene('start');
     }
 
@@ -928,6 +1209,9 @@
 
       if (scene.xp)  gainXP(scene.xp);
       if (scene.dom) gainDom(scene.dom);
+
+      // Unlock move BEFORE rendering (so the popup appears)
+      if (scene.unlocksMove) unlockMove(scene.unlocksMove);
 
       // Trail
       const trail = document.getElementById('trail');
@@ -945,7 +1229,7 @@
       // Text
       document.getElementById('scene-text').innerHTML = scene.text || '';
 
-      // Choices / ending
+      // Choices
       const choicesEl = document.getElementById('choices');
       choicesEl.innerHTML = '';
 
@@ -962,39 +1246,64 @@
         stats.style.margin = '0.75rem 0';
         stats.innerHTML =
           `<span class="pill pill-xp">XP: ${xp}/100</span>` +
-          `<span class="pill pill-blue">DOMINATION: ${dom}%</span>`;
+          `<span class="pill pill-blue">DOMINATION: ${dom}%</span>` +
+          `<span class="pill pill-green">MOVES: ${specialMoves.size}/3</span>`;
 
         const replay = document.createElement('button');
         replay.className = 'btn-primary';
+        replay.style.marginTop = '1.25rem';
         replay.textContent = '▶ PLAY AGAIN';
         replay.onclick = () => {
-          document.getElementById('title-screen').style.display  = 'block';
-          document.getElementById('scene-card').style.display    = 'none';
-          document.getElementById('xp-area').style.display       = 'none';
+          document.getElementById('title-screen').style.display    = 'block';
+          document.getElementById('scene-card').style.display      = 'none';
+          document.getElementById('xp-area').style.display         = 'none';
           document.getElementById('domination-wrap').style.display = 'none';
+          document.getElementById('moves-kit').style.display       = 'none';
         };
 
         choicesEl.appendChild(eyebrow);
         choicesEl.appendChild(title);
         choicesEl.appendChild(stats);
         choicesEl.appendChild(replay);
-      } else {
-        (scene.choices || []).forEach(c => {
+        return;
+      }
+
+      // Separate normal and special choices
+      const normalChoices  = (scene.choices || []).filter(c => !c.isSpecial);
+      const specialChoices = (scene.choices || []).filter(c => c.isSpecial && specialMoves.has(c.requiresMove));
+
+      normalChoices.forEach(c => {
+        const btn = document.createElement('button');
+        btn.className = 'choice-btn';
+        btn.innerHTML = c.text;
+        btn.onclick = () => navigate(c.next);
+        choicesEl.appendChild(btn);
+      });
+
+      if (specialChoices.length > 0) {
+        const sep = document.createElement('div');
+        sep.className = 'choices-sep';
+        sep.textContent = '— or use a special move —';
+        choicesEl.appendChild(sep);
+
+        specialChoices.forEach(c => {
           const btn = document.createElement('button');
-          btn.className = 'choice-btn';
-          btn.innerHTML = c.text;
-          btn.onclick = () => {
-            const card = document.getElementById('scene-card');
-            card.style.animation = 'none';
-            card.offsetHeight;
-            card.style.animation = '';
-            showScene(c.next);
-          };
+          btn.className = 'choice-btn choice-special';
+          btn.innerHTML = '⚒ ' + c.text;
+          btn.onclick = () => navigate(c.next);
           choicesEl.appendChild(btn);
         });
       }
 
       document.getElementById('scene-card').scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+
+    function navigate(nextId) {
+      const card = document.getElementById('scene-card');
+      card.style.animation = 'none';
+      card.offsetHeight; // reflow
+      card.style.animation = '';
+      showScene(nextId);
     }
   </script>
 
