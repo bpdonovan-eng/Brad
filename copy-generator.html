@@ -1,0 +1,821 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Xero Copy Generator</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@700;800&family=Barlow:wght@400;500;600&display=swap');
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --navy: #000856;
+    --xero-blue: #3ECCFF;
+    --xui-blue: #0078C8;
+    --white: #FFFFFF;
+    --warm-grey: #F2F1EE;
+    --mid-grey: #C8CAC9;
+    --coral: #FF719B;
+    --mint: #8AEAAA;
+    --gold: #FDCC08;
+    --lilac: #D9C6FF;
+    --dim: rgba(255,255,255,0.45);
+    --mid: rgba(255,255,255,0.72);
+    --border: rgba(255,255,255,0.1);
+    --border-mid: rgba(255,255,255,0.18);
+  }
+  html { scroll-behavior: smooth; }
+  body { font-family: 'Barlow', sans-serif; background: var(--navy); color: var(--white); min-height: 100vh; overflow-x: hidden; }
+  /* Background */
+  .bg {
+    position: fixed; inset: 0; z-index: 0; pointer-events: none; overflow: hidden;
+  }
+  .bg-blob {
+    position: absolute; border-radius: 50%; filter: blur(80px); opacity: 0.06;
+  }
+  .bg-blob-1 { width: 60vw; height: 60vw; top: -20%; right: -15%; background: var(--xero-blue); }
+  .bg-blob-2 { width: 50vw; height: 50vw; bottom: -20%; left: -15%; background: var(--xui-blue); }
+  /* Layout */
+  .wrap { position: relative; z-index: 1; max-width: 900px; margin: 0 auto; padding: 0 24px 80px; }
+  /* Header */
+  header { padding: 44px 0 40px; border-bottom: 1px solid var(--border); margin-bottom: 40px; }
+  .logo-row { display: flex; align-items: center; gap: 10px; margin-bottom: 36px; }
+  .logo-mark {
+    width: 32px; height: 32px; background: var(--xero-blue); border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Barlow Condensed', sans-serif; font-weight: 800; font-size: 16px;
+    color: var(--navy); flex-shrink: 0;
+  }
+  .logo-word { font-size: 11px; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase; color: var(--dim); }
+  .eyebrow { font-size: 11px; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase; color: var(--xero-blue); margin-bottom: 14px; }
+  h1 { font-family: 'Barlow Condensed', sans-serif; font-weight: 800; font-size: clamp(36px,6vw,58px); line-height: 0.95; letter-spacing: -0.02em; margin-bottom: 18px; }
+  h1 em { font-style: normal; color: var(--xero-blue); }
+  .intro { font-size: 15px; line-height: 1.7; color: var(--mid); max-width: 520px; }
+  /* Controls */
+  .controls { display: flex; flex-direction: column; gap: 28px; margin-bottom: 36px; }
+  .control-row { display: flex; flex-direction: column; gap: 10px; }
+  .control-label { font-size: 11px; font-weight: 600; letter-spacing: 0.13em; text-transform: uppercase; color: var(--dim); }
+  /* Audience toggle */
+  .audience-toggle {
+    display: inline-flex; background: rgba(255,255,255,0.05); border: 1px solid var(--border); border-radius: 100px; padding: 4px; gap: 2px;
+  }
+  .aud-btn {
+    font-family: 'Barlow', sans-serif; font-size: 13px; font-weight: 600; padding: 8px 20px;
+    border-radius: 100px; border: none; background: transparent; color: var(--mid);
+    cursor: pointer; transition: all 0.18s ease; letter-spacing: 0.02em;
+  }
+  .aud-btn.active { background: var(--xero-blue); color: var(--navy); }
+  .aud-btn:not(.active):hover { color: var(--white); }
+  /* Feature pills */
+  .feature-pills { display: flex; flex-wrap: wrap; gap: 7px; }
+  .feat-btn {
+    font-family: 'Barlow', sans-serif; font-size: 12px; font-weight: 500;
+    padding: 7px 15px; border-radius: 100px; border: 1px solid var(--border);
+    background: rgba(255,255,255,0.04); color: var(--mid); cursor: pointer;
+    transition: all 0.15s ease; letter-spacing: 0.01em;
+  }
+  .feat-btn:hover { border-color: var(--border-mid); color: var(--white); }
+  .feat-btn.active { background: rgba(62,204,255,0.12); border-color: rgba(62,204,255,0.4); color: var(--xero-blue); font-weight: 600; }
+  /* Register selector */
+  .register-row { display: flex; gap: 10px; }
+  .reg-btn {
+    flex: 1; padding: 16px 14px; border-radius: 12px; border: 1px solid var(--border);
+    background: rgba(255,255,255,0.03); cursor: pointer; text-align: center; transition: all 0.18s ease;
+  }
+  .reg-btn:hover { background: rgba(255,255,255,0.06); }
+  .reg-icon { font-size: 18px; margin-bottom: 6px; opacity: 0.4; transition: opacity 0.18s; }
+  .reg-name { font-family: 'Barlow Condensed', sans-serif; font-size: 13px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; margin-bottom: 3px; color: rgba(255,255,255,0.5); transition: color 0.18s; }
+  .reg-desc { font-size: 11px; color: var(--dim); }
+  .reg-btn.active .reg-icon { opacity: 1; }
+  .reg-btn.active-quiet { background: rgba(200,202,201,0.08); border-color: rgba(200,202,201,0.25); }
+  .reg-btn.active-quiet .reg-name { color: var(--mid-grey); }
+  .reg-btn.active-wink { background: rgba(62,204,255,0.08); border-color: rgba(62,204,255,0.3); }
+  .reg-btn.active-wink .reg-name { color: var(--xero-blue); }
+  .reg-btn.active-bold { background: rgba(255,113,155,0.08); border-color: rgba(255,113,155,0.3); }
+  .reg-btn.active-bold .reg-name { color: var(--coral); }
+  /* Divider */
+  .divider { height: 1px; background: var(--border); margin-bottom: 36px; }
+  /* Output */
+  #output { min-height: 200px; }
+  .empty {
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    padding: 60px 20px; text-align: center; opacity: 0.35;
+  }
+  .empty-icon { font-size: 28px; margin-bottom: 14px; }
+  .empty p { font-size: 14px; color: var(--dim); max-width: 300px; line-height: 1.6; }
+  /* Copy card */
+  .copy-card {
+    border-radius: 16px; overflow: hidden;
+    animation: slideIn 0.3s ease forwards; opacity: 0; transform: translateY(12px);
+  }
+  @keyframes slideIn { to { opacity: 1; transform: translateY(0); } }
+  .card-tag {
+    display: flex; align-items: center; gap: 9px;
+    padding: 13px 20px; border-bottom: 1px solid rgba(0,0,0,0.15);
+  }
+  .tag-dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
+  .tag-name { font-family: 'Barlow Condensed', sans-serif; font-size: 11px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; }
+  .tag-feature { font-size: 11px; color: var(--dim); margin-left: auto; }
+  .card-body { padding: 28px 28px 20px; }
+  .copy-hl {
+    font-family: 'Barlow Condensed', sans-serif; font-weight: 800;
+    font-size: clamp(24px,3.8vw,34px); line-height: 1.02; letter-spacing: -0.01em;
+    margin-bottom: 12px; color: var(--white);
+  }
+  .copy-sl { font-size: 14px; line-height: 1.7; color: var(--mid); margin-bottom: 0; }
+  .claim-row {
+    margin: 20px 28px 0; padding: 16px 20px; border-radius: 10px;
+    background: rgba(255,255,255,0.04); border: 1px solid var(--border);
+  }
+  .claim-label { font-size: 10px; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: var(--dim); margin-bottom: 7px; }
+  .claim-text { font-size: 13px; line-height: 1.6; color: var(--mid); font-style: italic; }
+  .claim-source { font-size: 11px; color: var(--dim); margin-top: 5px; font-style: normal; }
+  .card-actions {
+    display: flex; gap: 8px; padding: 16px 28px 20px; border-top: 1px solid rgba(255,255,255,0.06); margin-top: 20px;
+  }
+  .act-btn {
+    font-size: 11px; font-weight: 600; letter-spacing: 0.05em; text-transform: uppercase;
+    padding: 7px 14px; border-radius: 7px; border: 1px solid var(--border);
+    background: transparent; color: var(--dim); cursor: pointer; transition: all 0.15s;
+  }
+  .act-btn:hover { border-color: var(--border-mid); color: var(--white); }
+  .act-btn.done { color: var(--mint); border-color: var(--mint); }
+  /* Register colour themes on cards */
+  .card-quiet { background: rgba(200,202,201,0.06); border: 1px solid rgba(200,202,201,0.14); }
+  .card-quiet .card-tag { background: rgba(200,202,201,0.05); }
+  .card-quiet .tag-dot { background: var(--mid-grey); }
+  .card-quiet .tag-name { color: var(--mid-grey); }
+  .card-wink { background: rgba(62,204,255,0.05); border: 1px solid rgba(62,204,255,0.18); }
+  .card-wink .card-tag { background: rgba(62,204,255,0.05); }
+  .card-wink .tag-dot { background: var(--xero-blue); }
+  .card-wink .tag-name { color: var(--xero-blue); }
+  .card-bold { background: rgba(255,113,155,0.05); border: 1px solid rgba(255,113,155,0.18); }
+  .card-bold .card-tag { background: rgba(255,113,155,0.05); }
+  .card-bold .tag-dot { background: var(--coral); }
+  .card-bold .tag-name { color: var(--coral); }
+  /* Disclaimer */
+  .disclaimer { font-size: 11px; color: var(--dim); text-align: center; padding-top: 48px; line-height: 1.7; border-top: 1px solid var(--border); margin-top: 48px; }
+  @media (max-width: 580px) {
+    .register-row { flex-direction: column; }
+    .reg-btn { text-align: left; display: flex; align-items: center; gap: 12px; }
+    .reg-icon { margin-bottom: 0; }
+  }
+</style>
+</head>
+<body>
+<div class="bg"><div class="bg-blob bg-blob-1"></div><div class="bg-blob bg-blob-2"></div></div>
+<div class="wrap">
+  <header>
+    <div class="logo-row">
+      <div class="logo-mark">X</div>
+      <div class="logo-word">Foundry — Copy Generator</div>
+    </div>
+    <p class="eyebrow">The Xero voice in action</p>
+    <h1>Pick your feature.<br>Dial up the <em>magic.</em></h1>
+    <p class="intro">Approved claims and feature messages, rewritten in the new Xero voice. Choose a feature, pick your register, and see how the same message lands differently at each level.</p>
+  </header>
+  <div class="controls">
+    <!-- Audience -->
+    <div class="control-row">
+      <span class="control-label">Audience</span>
+      <div class="audience-toggle">
+        <button class="aud-btn active" data-aud="sb">Small business</button>
+        <button class="aud-btn" data-aud="ab">Accountant / bookkeeper</button>
+      </div>
+    </div>
+    <!-- Feature -->
+    <div class="control-row">
+      <span class="control-label">Feature</span>
+      <div class="feature-pills" id="featurePills"></div>
+    </div>
+    <!-- Register -->
+    <div class="control-row">
+      <span class="control-label">Register</span>
+      <div class="register-row">
+        <button class="reg-btn active-quiet" data-reg="quiet" onclick="selectReg(this)">
+          <div class="reg-icon">&#8212;</div>
+          <div class="reg-name">Quiet authority</div>
+          <div class="reg-desc">Calm, precise, functional</div>
+        </button>
+        <button class="reg-btn" data-reg="wink" onclick="selectReg(this)">
+          <div class="reg-icon">&#9680;</div>
+          <div class="reg-name">Knowing wink</div>
+          <div class="reg-desc">Dry, warm, self-aware</div>
+        </button>
+        <button class="reg-btn" data-reg="bold" onclick="selectReg(this)">
+          <div class="reg-icon">&#9679;</div>
+          <div class="reg-name">Bold swing</div>
+          <div class="reg-desc">Charged, unexpected</div>
+        </button>
+      </div>
+    </div>
+  </div>
+  <div class="divider"></div>
+  <div id="output"><div class="empty"><div class="empty-icon">&#10022;</div><p>Select a feature above to see the copy.</p></div></div>
+  <p class="disclaimer">All copy has been written to the 2026 Xero tone of voice guide. Claims are sourced from approved Storybook materials.<br>This is reference material for Xero writers, not approved campaign copy. Always verify with your CD before publishing.</p>
+</div>
+<script>
+// ── Copy bank ─────────────────────────────────────────────────────────────
+const COPY = {
+  sb: {
+    'bank-rec': {
+      label: 'Bank feeds & reconciliation',
+      quiet: {
+        hl: 'Bank transactions, matched. Books, current.',
+        sl: 'Connect your bank and Xero imports, categorises, and reconciles automatically, so your cash position is always accurate without any manual entry.'
+      },
+      wink: {
+        hl: 'Your books updated themselves. Again.',
+        sl: 'Automated bank feeds pull in transactions as they happen, match them intelligently, and keep your accounts current. You barely had to be involved.'
+      },
+      bold: {
+        hl: 'Reconciliation just retired.',
+        sl: 'Bank feeds import and match your transactions automatically, so the most tedious job in bookkeeping is just gone. Your books are current. You\'re somewhere else.'
+      },
+      claim: {
+        text: '"I would say I\'m usually spending seven hours a week. I\'ll be able to get through reconciling transactions in less than 30 minutes on a given day now. Definitely a third of the time I\'d usually be spending."',
+        source: 'Xero small business customer'
+      }
+    },
+    'bills': {
+      label: 'Bills & bill payments',
+      quiet: {
+        hl: 'Bills captured. Due dates tracked. Nothing missed.',
+        sl: 'Upload or forward bills and Xero extracts the key details automatically, flags duplicates, and tracks what\'s due, so nothing slips through.'
+      },
+      wink: {
+        hl: 'Your bills sorted themselves out.',
+        sl: 'Forward an email or upload a file. Xero handles the data entry, catches the duplicates, and tracks due dates. You just approve and move on.'
+      },
+      bold: {
+        hl: 'The bill pile just got a system.',
+        sl: 'Xero captures, extracts, and tracks your bills automatically, so the inbox of dread becomes an organised list of done. And the duplicates never stand a chance.'
+      },
+      claim: {
+        text: 'Over 80% of small businesses rate Xero 8/10 or higher for ease of use.',
+        source: 'Survey of 526 small businesses globally using Xero, October 2025'
+      }
+    },
+    'invoicing': {
+      label: 'Invoicing & getting paid',
+      quiet: {
+        hl: 'Professional invoices. Automated reminders. Faster payments.',
+        sl: 'Create and send customised invoices, set up automatic payment reminders, and give customers more ways to pay, all from one place.'
+      },
+      wink: {
+        hl: 'Invoice sent. Reminder set. You: unbothered.',
+        sl: 'Automated reminders, more payment options, and professional invoices that take minutes to create. Getting paid shouldn\'t be this easy. And yet here we are.'
+      },
+      bold: {
+        hl: 'Chase your ambition. Not your invoices.',
+        sl: 'Automated reminders and online payments mean the money finds its way to you without the follow-up calls. Professional invoices that practically send themselves.'
+      },
+      claim: {
+        text: 'Over 80% of small businesses rate Xero 8/10 or higher for ease of use.',
+        source: 'Survey of 526 small businesses globally using Xero, October 2025'
+      }
+    },
+    'jax': {
+      label: 'JAX, your AI companion',
+      quiet: {
+        hl: 'Invoices created. Questions answered. JAX, on it.',
+        sl: 'Xero\'s AI business companion automates routine tasks like creating invoices and quotes, and answers your accounting questions, so you spend less time on the how.'
+      },
+      wink: {
+        hl: 'Asked JAX. Done before you finished asking.',
+        sl: 'Invoices, quotes, accounting questions: JAX handles them while you\'re handling the actual business. Turns out quite a bit of this can run itself.'
+      },
+      bold: {
+        hl: 'You asked. JAX already handled it.',
+        sl: 'Invoices, quotes, accounting questions, all taken care of by your AI business companion before you\'ve had time to think about them. That\'s a whole category of your day, back.'
+      },
+      claim: {
+        text: 'Over 2 million Xero subscribers are already benefitting from AI capabilities.',
+        source: 'Xero product data, approved by Investor Relations for media use'
+      }
+    },
+    'payroll': {
+      label: 'Payroll',
+      quiet: {
+        hl: 'Payroll run. Compliance confirmed. Team paid.',
+        sl: 'Pay your employees and manage payroll obligations in a few clicks, accurate, on time, and connected directly to your accounts.'
+      },
+      wink: {
+        hl: 'Payday. Done before morning tea.',
+        sl: 'Run payroll in minutes, not hours. Your team gets paid, your compliance is handled, and your afternoon is entirely yours.'
+      },
+      bold: {
+        hl: 'Run payroll. Not from it.',
+        sl: 'A few clicks and your team is paid, your obligations are covered, and payroll is officially the least stressful part of your week. That\'s a sentence you can now say.'
+      },
+      claim: {
+        text: 'Most Loved Payroll Software, based on a survey of over 60,000 Australians.',
+        source: 'Finder Awards 2025'
+      }
+    },
+    'tax': {
+      label: 'Tax',
+      quiet: {
+        hl: 'Tax tracked as you go. Returns prepared when you need them.',
+        sl: 'Xero maps your bookkeeping to the right tax categories automatically, so your obligations are always current and your return is ready when it\'s time to file.'
+      },
+      wink: {
+        hl: 'Tax time. Surprisingly manageable.',
+        sl: 'Xero tracks every obligation as you trade and maps it automatically. So when filing comes around, the work is already done. Tax season just lost its power over you.'
+      },
+      bold: {
+        hl: 'Tax time used to be a thing.',
+        sl: 'Every obligation tracked, every category mapped, everything ready before the dread has time to set in. The return that used to take a weekend now takes an afternoon.'
+      },
+      claim: {
+        text: 'Over 80% of small businesses rate Xero 8/10 or higher for ease of use.',
+        source: 'Survey of 526 small businesses globally using Xero, October 2025'
+      }
+    },
+    'ecosystem': {
+      label: 'App integrations',
+      quiet: {
+        hl: '1,000+ apps. One connected platform.',
+        sl: 'Bring the tools you already rely on into Xero and keep your data flowing in one place. More than 1,000 certified integrations, built to work together.'
+      },
+      wink: {
+        hl: '1,000+ apps. One Xero.',
+        sl: 'Connect the tools your business already runs on and keep everything talking in one place. Your tech stack just got a lot less complicated.'
+      },
+      bold: {
+        hl: 'Your whole business, in one place.',
+        sl: 'Over 1,000 connected apps, all talking to Xero. The days of switching between systems to track down a number are officially behind you.'
+      },
+      claim: {
+        text: 'Customise and extend Xero with more than 1,000 connected apps.',
+        source: 'Xero App Store'
+      }
+    },
+    'reporting': {
+      label: 'Reporting',
+      quiet: {
+        hl: 'Real-time reports. One source of truth.',
+        sl: 'Run accurate financial reports whenever you need them, a clear, current picture of your business built from the data already in Xero.'
+      },
+      wink: {
+        hl: 'The numbers, before you even asked.',
+        sl: 'Real-time reports across all your accounting data, so instead of hunting for answers, you just look them up. It shouldn\'t feel this simple. But it does.'
+      },
+      bold: {
+        hl: 'Know your numbers. Know your next move.',
+        sl: 'Real-time financial reports that turn raw data into decisions. The part of running a business where you used to guess now has an actual answer.'
+      },
+      claim: {
+        text: 'Over 80% of small businesses rate Xero 8/10 or higher for ease of use.',
+        source: 'Survey of 526 small businesses globally using Xero, October 2025'
+      }
+    },
+    'analytics': {
+      label: 'Analytics & insights',
+      quiet: {
+        hl: 'Your financial data, clear and visual.',
+        sl: 'Analytics powered by Syft transforms your numbers into visual insights, so you can understand performance, spot trends, and make confident decisions at a glance.'
+      },
+      wink: {
+        hl: 'Your data went from confusing to actually useful.',
+        sl: 'Financial visualisations that make your numbers readable without a spreadsheet in sight. Trends, cash position, performance: all in a format you can actually act on.'
+      },
+      bold: {
+        hl: 'Your business, finally fluent.',
+        sl: 'Analytics powered by Syft turns your financial data into clear visual stories that answer questions before you knew to ask them. The numbers that used to need interpreting now explain themselves.'
+      },
+      claim: {
+        text: '"It\'s not hard to use. You\'re not changing anything. You\'re just visualising it."',
+        source: 'Godwyn Morris, Dazzling Discoveries'
+      }
+    },
+    'support': {
+      label: 'Support',
+      quiet: {
+        hl: 'Expert help, whenever you need it.',
+        sl: 'Xero\'s support team is available around the clock, with personalised onboarding calls to get you set up quickly and confidently from day one.'
+      },
+      wink: {
+        hl: 'Answers. Not hold music.',
+        sl: 'Real Xero experts, available 24/7, rated 9.4 out of 10 for onboarding support. Someone actually picks up. In 2025, that counts for something.'
+      },
+      bold: {
+        hl: 'Support that shows up.',
+        sl: 'Round-the-clock expert help, one-on-one setup calls, and an onboarding team rated 9.4 out of 10 by new customers. The kind of support that earns the name.'
+      },
+      claim: {
+        text: 'New customers rate Xero onboarding support 9.4 out of 10.',
+        source: 'Xero onboarding data, 2025'
+      }
+    },
+    'mobile': {
+      label: 'Mobile app',
+      quiet: {
+        hl: 'Your business finances, wherever you are.',
+        sl: 'The Xero Accounting app keeps invoices, cash flow, and account management in your pocket, so staying on top of your numbers doesn\'t mean being at a desk.'
+      },
+      wink: {
+        hl: 'Invoiced from the car park. Paid by lunch.',
+        sl: 'Create and send invoices, check your cash position, and manage your accounts from your phone. The office is wherever you happen to be standing now.'
+      },
+      bold: {
+        hl: 'Your business. Running from your pocket.',
+        sl: 'Invoice, reconcile, and track your cash flow from anywhere. The Xero app turns your phone into the only office you actually need. The desk is optional now.'
+      },
+      claim: {
+        text: 'Xero Accounting App: Apple\'s App of the Day in both the UK and Australia in 2025.',
+        source: 'Apple App Store, 2025'
+      }
+    },
+    'inventory': {
+      label: 'Simple inventory',
+      quiet: {
+        hl: 'Inventory tracked. Accounting updated. Always in sync.',
+        sl: 'Connect what you buy and sell directly to your accounts, so your stock levels and financial position are always accurate, in one place.'
+      },
+      wink: {
+        hl: 'What you\'ve got, where it went. Already updated.',
+        sl: 'Track inventory and connect it to your accounting automatically. Your stock position and your numbers, always telling the same story at the same time.'
+      },
+      bold: {
+        hl: 'Less time counting. More time selling.',
+        sl: 'Xero connects your inventory to your accounts in real time, so stock levels, costs, and cash flow update together. The manual reconciliation of those two worlds: done.'
+      },
+      claim: {
+        text: 'Over 80% of small businesses rate Xero 8/10 or higher for ease of use.',
+        source: 'Survey of 526 small businesses globally using Xero, October 2025'
+      }
+    }
+  },
+  ab: {
+    'bank-rec': {
+      label: 'Bank feeds & reconciliation',
+      quiet: {
+        hl: 'Client books, current. Without the manual work.',
+        sl: 'Automated bank feeds and smart transaction matching keep client accounts up to date continuously, so your team spends less time on data entry and more on what it\'s there for.'
+      },
+      wink: {
+        hl: 'Client reconciliation. Done before the call.',
+        sl: 'Bank feeds pull transactions automatically, match them intelligently, and update the books in real time. Your clients walk in with accurate numbers. You walk in with better questions.'
+      },
+      bold: {
+        hl: 'The reconciliation bottleneck, gone.',
+        sl: 'Automated feeds and smart matching mean client books stay current without anyone touching them. The hours your team used to spend on data entry are now spent on the work that actually builds your practice.'
+      },
+      claim: {
+        text: '"We\'re averaging about 49% time saving across all the jobs. I think our best time saving is about 58% and even our worst is still 31%. It feels like that return on investment is immediate."',
+        source: 'Emma Reed, Cottons Group'
+      }
+    },
+    'xero-for-sbs': {
+      label: 'Xero for your clients',
+      quiet: {
+        hl: 'One ledger. Always live. Always shared.',
+        sl: 'A single platform for bookkeeping, cash flow, and advisory, so you and your clients are always working from the same numbers at the same time.'
+      },
+      wink: {
+        hl: 'Your clients\' books. Your view. Real time.',
+        sl: 'One live ledger means you and your clients always see the same data. No version control, no chasing, no surprises in a review meeting you could have avoided.'
+      },
+      bold: {
+        hl: 'Same page. Same numbers. Every single time.',
+        sl: 'Xero\'s single ledger means the data your client sees is the data you see, live, accurate, and ready for the conversation that moves things forward.'
+      },
+      claim: {
+        text: '94% of accountants and bookkeepers using Xero agree it makes client collaboration easier.',
+        source: 'Survey of 392 accountants and bookkeepers in the UK using Xero, May 2024'
+      }
+    },
+    'syft': {
+      label: 'Syft Analytics',
+      quiet: {
+        hl: 'Automated reporting. Visual insights. Included in your subscription.',
+        sl: 'Syft Analytics generates reports, forecasts, and benchmarks directly from client data in Xero, so advisory conversations are backed by something more than intuition.'
+      },
+      wink: {
+        hl: 'Your clients\' numbers, made actually readable.',
+        sl: 'Automated reports, forecasting, and benchmarking built from the data already in Xero. Advisory that used to take hours to prepare now takes minutes. And it looks better too.'
+      },
+      bold: {
+        hl: 'From compliance to advisory. In the same meeting.',
+        sl: 'Syft turns your clients\' financial data into clear, visual insights, so you spend less time building slides and more time being the most useful person in the room.'
+      },
+      claim: {
+        text: '91% of accountants and bookkeepers using Xero agree it helps them be more confident advising clients.',
+        source: 'Survey of 392 accountants and bookkeepers in the UK using Xero, May 2024'
+      }
+    },
+    'reporting': {
+      label: 'Reporting & analytics',
+      quiet: {
+        hl: 'Accurate reports. Trusted insights. Advice that lands.',
+        sl: 'Real-time reporting across all client data, so the numbers behind your advice are always current, always reliable, and always from a single source.'
+      },
+      wink: {
+        hl: 'The numbers that back up everything you say.',
+        sl: 'Real-time Xero reports mean the advice you give is grounded in actual data, not last month\'s export or a client\'s best approximation of their own figures.'
+      },
+      bold: {
+        hl: 'Your advice, underwritten by live data.',
+        sl: 'Xero\'s reporting keeps every client\'s numbers current and accurate. The recommendations you make are only as strong as what\'s behind them. Now they\'re stronger.'
+      },
+      claim: {
+        text: '91% of accountants and bookkeepers using Xero agree it helps them be more confident advising clients.',
+        source: 'Survey of 392 accountants and bookkeepers in the UK using Xero, May 2024'
+      }
+    },
+    'xero-tax': {
+      label: 'Xero Tax',
+      quiet: {
+        hl: 'Tax preparation, filing, compliance. One platform.',
+        sl: 'Prepare and file accounts and tax returns for all your clients from a single system, including those who aren\'t on Xero, at no extra cost.'
+      },
+      wink: {
+        hl: 'Tax season. Manageable, apparently.',
+        sl: 'Xero Tax handles preparation and filing for all your clients from one place, so the annual sprint becomes a rolling rhythm. That\'s a sentence that previously wouldn\'t have made sense.'
+      },
+      bold: {
+        hl: 'Every client. One system. Tax season, handled.',
+        sl: 'Prepare, review, and file for your entire client base, even non-Xero clients, from a single platform. The chaos that used to define this time of year just got a system.'
+      },
+      claim: {
+        text: 'TrustRadius has ranked Xero Top Rated in its category for 2025. Five years in a row.',
+        source: 'TrustRadius, 2025'
+      }
+    },
+    'workpapers': {
+      label: 'Workpapers',
+      quiet: {
+        hl: 'Working papers. Compliance workflows. One place.',
+        sl: 'Client bookkeeping data flows directly from Xero into your working trial balance, so manual data entry is reduced and review and finalisation happen faster.'
+      },
+      wink: {
+        hl: 'Working papers that practically populated themselves.',
+        sl: 'Direct data flows from Xero into your working trial balance mean the manual part of compliance prep is mostly gone. The work your team used to dread now just appears, ready to review.'
+      },
+      bold: {
+        hl: 'Less time entering data. More clients done.',
+        sl: 'Automated data flows from Xero into working papers means compliance prep is faster, finalisation is earlier, and the team hours that used to disappear into data entry are back on the table.'
+      },
+      claim: {
+        text: '"We\'re averaging about 49% time saving across all the jobs," says Emma. "I think our best time saving is about 58%."',
+        source: 'Emma Reed, Cottons Group'
+      }
+    },
+    'job-mgmt': {
+      label: 'Job management',
+      quiet: {
+        hl: 'Jobs tracked. Time logged. Practice visibility, clear.',
+        sl: 'Manage tasks, allocate work, and access advanced reporting across your entire practice from one integrated system, so nothing falls through.'
+      },
+      wink: {
+        hl: 'Every job. Every deadline. Actually visible.',
+        sl: 'Integrated jobs, time, and billing give you a real picture of your whole practice. Nothing falls through, and nothing\'s a surprise at month-end. That\'s a meaningful change.'
+      },
+      bold: {
+        hl: 'Your practice. Finally under control.',
+        sl: 'Jobs management, time tracking, and billing, all integrated in Xero. The visibility your practice has always needed, in the place your team is already working.'
+      },
+      claim: {
+        text: '94% of accountants and bookkeepers using Xero agree it makes client collaboration easier.',
+        source: 'Survey of 392 accountants and bookkeepers in the UK using Xero, May 2024'
+      }
+    },
+    'client-mgmt': {
+      label: 'Client management',
+      quiet: {
+        hl: 'Every client. One record. Fully connected.',
+        sl: 'A single client record that works across all your Xero practice tools, so nothing gets duplicated, nothing conflicts, and every team member is working from the same information.'
+      },
+      wink: {
+        hl: 'One client. One record. Zero surprises.',
+        sl: 'The same client data flows through every tool in your practice. No double handling, no conflicting records, no explaining to a client why you don\'t know something you absolutely should.'
+      },
+      bold: {
+        hl: 'All your clients. One version of the truth.',
+        sl: 'A single client record connected across your whole practice. The admin overhead of reconciling multiple systems just quietly disappeared. Your team knows what it knows, practice-wide.'
+      },
+      claim: {
+        text: '94% of accountants and bookkeepers using Xero agree it makes client collaboration easier.',
+        source: 'Survey of 392 accountants and bookkeepers in the UK using Xero, May 2024'
+      }
+    },
+    'staff-mgmt': {
+      label: 'Staff management',
+      quiet: {
+        hl: 'Staff access. Permissions. Managed in one place.',
+        sl: 'Onboard, offboard, and control staff permissions across your practice and Xero from a single system, with full confidence in who can access what.'
+      },
+      wink: {
+        hl: 'Who can see what. Actually sorted.',
+        sl: 'Manage permissions across your practice tools in one place. Onboarding is fast, offboarding is complete, and nothing gets left open when someone moves on.'
+      },
+      bold: {
+        hl: 'Access granted. Access revoked. No loose ends.',
+        sl: 'Staff permissions managed centrally across your whole practice. When someone joins or leaves, everything changes at once, cleanly. The way it always should have worked.'
+      },
+      claim: {
+        text: '91% of accountants and bookkeepers using Xero agree it helps them be more confident advising clients.',
+        source: 'Survey of 392 accountants and bookkeepers in the UK using Xero, May 2024'
+      }
+    },
+    'ecosystem': {
+      label: 'Ecosystem & apps',
+      quiet: {
+        hl: '1,000+ apps. Your practice tools, connected.',
+        sl: 'Connect the apps your practice already runs on and keep data flowing in one place. Over 1,000 certified integrations, built to reduce double-handling across every workflow.'
+      },
+      wink: {
+        hl: '1,000+ apps. One less thing to manage.',
+        sl: 'The tools that power your practice, connected to Xero and working together. Less time switching between systems. More time doing the work that actually moves things forward.'
+      },
+      bold: {
+        hl: 'Your whole practice stack. Finally talking to itself.',
+        sl: 'Over 1,000 apps connected to Xero. The data your team needs flows automatically, without anyone manually copying it from one system into another. That hour a day: yours again.'
+      },
+      claim: {
+        text: 'Extend and grow your practice with more than 1,000 connected apps.',
+        source: 'Xero App Store'
+      }
+    },
+    'partner-program': {
+      label: 'Partner program',
+      quiet: {
+        hl: 'Tools, rewards, and a free firm subscription. Built around how you grow.',
+        sl: 'The Xero partner program rewards accountants and bookkeepers who grow their Xero client base, with practice management tools and incentives that scale with your practice.'
+      },
+      wink: {
+        hl: 'Grow your practice. We\'ll look after the platform.',
+        sl: 'A free firm subscription, full practice tools, and a rewards structure that grows with your client base. A partnership that actually means something.'
+      },
+      bold: {
+        hl: 'Your practice, backed by Xero.',
+        sl: 'A free subscription, complete practice management tools, and a rewards program built around how your practice actually grows. The partner program that treats accountants like partners.'
+      },
+      claim: {
+        text: 'TrustRadius has ranked Xero Top Rated in its category for 2025. Five years in a row.',
+        source: 'TrustRadius, 2025'
+      }
+    },
+    'partner-central': {
+      label: 'Partner Central',
+      quiet: {
+        hl: 'Your partner account. Everything in one view.',
+        sl: 'Partner Central gives you instant access to your account, partner points, certifications, resources, and support, all from one personalised dashboard.'
+      },
+      wink: {
+        hl: 'Everything you need from Xero. Actually where you\'d look for it.',
+        sl: 'Partner points, certifications, resources, support: one dashboard, no digging. Partner Central is where your Xero relationship actually lives, in a place you can find it.'
+      },
+      bold: {
+        hl: 'Your Xero partnership. One screen. No searching.',
+        sl: 'Your account, rewards, certifications, and support, all in one place. The time your team used to spend navigating Xero admin: now spent on your practice.'
+      },
+      claim: {
+        text: 'TrustRadius has ranked Xero Top Rated in its category for 2025. Five years in a row.',
+        source: 'TrustRadius, 2025'
+      }
+    },
+    'jax': {
+      label: 'JAX, your AI companion',
+      quiet: {
+        hl: 'Automated workflows. Client insights. Your expertise, amplified.',
+        sl: 'JAX handles reconciliation, client summaries, and routine admin automatically, so your team spends less time on prep and more on the advice that builds client relationships.'
+      },
+      wink: {
+        hl: 'JAX did the prep. You bring the insight.',
+        sl: 'From automated reconciliation to client file summaries, JAX handles the busywork so you walk into every client meeting with better questions and more time to ask them.'
+      },
+      bold: {
+        hl: 'Less admin. Sharper advisory. JAX, already on it.',
+        sl: 'JAX automates the prep work that used to take hours. Your practice runs faster, your clients get sharper advice, and the work that actually builds relationships gets the time it deserves.'
+      },
+      claim: {
+        text: 'Over 2 million Xero subscribers are already benefitting from AI capabilities.',
+        source: 'Xero product data, approved by Investor Relations for media use'
+      }
+    },
+    'practice-editions': {
+      label: 'Practice Editions',
+      quiet: {
+        hl: 'Cost-effective plans. Every client in one system.',
+        sl: 'Xero\'s Practice Editions bring low-complexity clients onto the cloud at a price point that works for them, and a platform that connects to everything in your practice.'
+      },
+      wink: {
+        hl: 'Your low-complexity clients. Finally in the cloud.',
+        sl: 'Practice-only plans that bring your whole client base onto Xero. Even the clients who didn\'t think they needed accounting software are about to make your life easier.'
+      },
+      bold: {
+        hl: 'Every client in one system. No exceptions.',
+        sl: 'Affordable Practice Editions bring your low-complexity clients onto the same platform as everyone else. Your team stops switching tools. Your practice stops splitting its attention.'
+      },
+      claim: {
+        text: 'TrustRadius has ranked Xero Top Rated in its category for 2025. Five years in a row.',
+        source: 'TrustRadius, 2025'
+      }
+    }
+  }
+};
+// ── Register config ───────────────────────────────────────────────────────
+const REG = {
+  quiet: { cls: 'card-quiet', activeCls: 'active-quiet', label: 'Quiet authority', desc: 'Calm, precise, functional' },
+  wink:  { cls: 'card-wink',  activeCls: 'active-wink',  label: 'Knowing wink',   desc: 'Dry, warm, self-aware'  },
+  bold:  { cls: 'card-bold',  activeCls: 'active-bold',  label: 'Bold swing',     desc: 'Charged, unexpected'    }
+};
+// ── State ─────────────────────────────────────────────────────────────────
+let state = { aud: 'sb', feat: null, reg: 'quiet' };
+// ── Init ──────────────────────────────────────────────────────────────────
+function init() {
+  // Audience buttons
+  document.querySelectorAll('.aud-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.aud-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      state.aud = btn.dataset.aud;
+      state.feat = null;
+      buildFeaturePills();
+      render();
+    });
+  });
+  // Register: set first active
+  const firstReg = document.querySelector('.reg-btn');
+  firstReg.classList.add('active', 'active-quiet');
+  buildFeaturePills();
+}
+function buildFeaturePills() {
+  const container = document.getElementById('featurePills');
+  container.innerHTML = '';
+  const features = COPY[state.aud];
+  Object.entries(features).forEach(([key, data]) => {
+    const btn = document.createElement('button');
+    btn.className = 'feat-btn' + (state.feat === key ? ' active' : '');
+    btn.textContent = data.label;
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.feat-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      state.feat = key;
+      render();
+    });
+    container.appendChild(btn);
+  });
+}
+function selectReg(el) {
+  document.querySelectorAll('.reg-btn').forEach(b => {
+    b.classList.remove('active', 'active-quiet', 'active-wink', 'active-bold');
+  });
+  el.classList.add('active', REG[el.dataset.reg].activeCls);
+  state.reg = el.dataset.reg;
+  render();
+}
+// ── Render ────────────────────────────────────────────────────────────────
+function render() {
+  const out = document.getElementById('output');
+  if (!state.feat) {
+    out.innerHTML = '<div class="empty"><div class="empty-icon">&#10022;</div><p>Select a feature above to see the copy.</p></div>';
+    return;
+  }
+  const data = COPY[state.aud][state.feat];
+  const reg = state.reg;
+  const cfg = REG[reg];
+  const copy = data[reg];
+  const featLabel = data.label;
+  const claimHTML = data.claim ? `
+    <div class="claim-row">
+      <div class="claim-label">Supporting claim</div>
+      <div class="claim-text">${data.claim.text}</div>
+      <div class="claim-source">${data.claim.source}</div>
+    </div>` : '';
+  const fullCopy = `${copy.hl}\n${copy.sl}${data.claim ? '\n\nClaim: ' + data.claim.text + '\n' + data.claim.source : ''}`;
+  out.innerHTML = `
+    <div class="copy-card ${cfg.cls}">
+      <div class="card-tag">
+        <div class="tag-dot"></div>
+        <span class="tag-name">${cfg.label}</span>
+        <span class="tag-feature">${featLabel}</span>
+      </div>
+      <div class="card-body">
+        <div class="copy-hl">${copy.hl}</div>
+        <div class="copy-sl">${copy.sl}</div>
+      </div>
+      ${claimHTML}
+      <div class="card-actions">
+        <button class="act-btn" onclick="copyAll(this, \`${esc(fullCopy)}\`)">Copy all</button>
+        <button class="act-btn" onclick="copyAll(this, \`${esc(copy.hl)}\`)">Headline only</button>
+        <button class="act-btn" onclick="copyAll(this, \`${esc(copy.sl)}\`)">Subline only</button>
+      </div>
+    </div>`;
+}
+function copyAll(btn, text) {
+  navigator.clipboard.writeText(text).then(() => {
+    const orig = btn.textContent;
+    btn.textContent = 'Copied';
+    btn.classList.add('done');
+    setTimeout(() => { btn.textContent = orig; btn.classList.remove('done'); }, 2000);
+  });
+}
+function esc(s) {
+  return (s || '').replace(/\\/g, '\\\\').replace(/`/g, '\\`').replace(/\$/g, '\\$');
+}
+init();
+</script>
+</body>
+</html>
