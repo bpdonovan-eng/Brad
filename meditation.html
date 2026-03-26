@@ -1,0 +1,603 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Meditation</title>
+  <style>
+    :root {
+      --bg-deep: #1a1a2e;
+      --bg-card: #16213e;
+      --bg-card-hover: #1f3058;
+      --text-primary: #e8e8f0;
+      --text-secondary: #a0a0c0;
+      --accent: #7ec8e3;
+      --accent-warm: #c4a882;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+      background: radial-gradient(ellipse at center, #16213e 0%, var(--bg-deep) 70%);
+      color: var(--text-primary);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .app {
+      width: 100%;
+      max-width: 400px;
+      padding: 2rem 1.5rem;
+      position: relative;
+    }
+
+    section {
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      gap: 1.2rem;
+      opacity: 0;
+      transition: opacity 0.4s ease;
+    }
+
+    section.visible {
+      display: flex;
+      opacity: 1;
+    }
+
+    h2 {
+      font-size: 1.5rem;
+      font-weight: 300;
+      text-align: center;
+      letter-spacing: 0.02em;
+    }
+
+    .subtitle {
+      color: var(--text-secondary);
+      font-size: 0.9rem;
+      text-align: center;
+    }
+
+    .card-stack {
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+      width: 100%;
+    }
+
+    button {
+      font-family: inherit;
+      cursor: pointer;
+      border: none;
+      outline: none;
+    }
+
+    button:focus-visible {
+      outline: 2px solid var(--accent);
+      outline-offset: 2px;
+    }
+
+    .card-btn {
+      background: var(--bg-card);
+      color: var(--text-primary);
+      padding: 1rem 1.25rem;
+      border-radius: 12px;
+      font-size: 1.05rem;
+      font-weight: 400;
+      text-align: left;
+      transition: background 0.2s;
+      width: 100%;
+    }
+
+    .card-btn:hover { background: var(--bg-card-hover); }
+
+    .card-btn .card-desc {
+      display: block;
+      color: var(--text-secondary);
+      font-size: 0.8rem;
+      margin-top: 0.3rem;
+    }
+
+    .pill-row {
+      display: flex;
+      gap: 0.75rem;
+      justify-content: center;
+    }
+
+    .pill-btn {
+      background: var(--bg-card);
+      color: var(--text-primary);
+      padding: 0.7rem 1.5rem;
+      border-radius: 999px;
+      font-size: 1rem;
+      transition: background 0.2s;
+    }
+
+    .pill-btn:hover { background: var(--bg-card-hover); }
+
+    .back-btn {
+      background: none;
+      color: var(--text-secondary);
+      font-size: 0.85rem;
+      padding: 0.4rem 0;
+      align-self: flex-start;
+    }
+
+    .back-btn:hover { color: var(--text-primary); }
+
+    /* Timer */
+    .timer {
+      font-size: 3.5rem;
+      font-weight: 200;
+      font-variant-numeric: tabular-nums;
+      letter-spacing: 0.05em;
+    }
+
+    /* Breath circle */
+    .breath-circle {
+      width: 120px;
+      height: 120px;
+      border-radius: 50%;
+      background: rgba(126, 200, 227, 0.15);
+      border: 2px solid rgba(126, 200, 227, 0.3);
+      transition: transform ease;
+    }
+
+    .breath-cue {
+      color: var(--text-secondary);
+      font-size: 1rem;
+      min-height: 1.5em;
+    }
+
+    /* Deep sit mantra pulse */
+    .mantra-display {
+      font-size: 1.4rem;
+      font-style: italic;
+      text-align: center;
+      line-height: 1.6;
+      padding: 2rem 0;
+    }
+
+    @media (prefers-reduced-motion: no-preference) {
+      .mantra-display.pulse {
+        animation: gentlePulse 4s ease-in-out infinite;
+      }
+    }
+
+    @keyframes gentlePulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.6; }
+    }
+
+    .subtle-btn {
+      background: none;
+      color: var(--text-secondary);
+      font-size: 0.85rem;
+      padding: 0.5rem 1rem;
+      margin-top: 1rem;
+      opacity: 0.7;
+    }
+
+    .subtle-btn:hover { opacity: 1; color: var(--text-primary); }
+
+    .complete-msg {
+      font-size: 1.6rem;
+      font-weight: 300;
+      color: var(--accent-warm);
+    }
+
+    .affirmation {
+      color: var(--text-secondary);
+      font-size: 0.95rem;
+      text-align: center;
+      line-height: 1.5;
+    }
+
+    .restart-btn {
+      background: var(--bg-card);
+      color: var(--accent);
+      padding: 0.75rem 2rem;
+      border-radius: 999px;
+      font-size: 1rem;
+      margin-top: 1rem;
+      transition: background 0.2s;
+    }
+
+    .restart-btn:hover { background: var(--bg-card-hover); }
+
+    .session-mantra {
+      color: var(--text-secondary);
+      font-size: 1.1rem;
+      font-style: italic;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+
+    <!-- Screen 1: Emotion Select -->
+    <section id="screen-emotion" class="visible">
+      <h2>How are you feeling?</h2>
+      <div class="card-stack">
+        <button class="card-btn" data-emotion="anxious">Anxious</button>
+        <button class="card-btn" data-emotion="sad">Sad</button>
+        <button class="card-btn" data-emotion="angry">Angry</button>
+        <button class="card-btn" data-emotion="restless">Restless</button>
+        <button class="card-btn" data-emotion="overwhelmed">Overwhelmed</button>
+      </div>
+    </section>
+
+    <!-- Screen 2: Method Select -->
+    <section id="screen-method">
+      <button class="back-btn" data-back="emotion">&larr; Back</button>
+      <h2>Choose your practice</h2>
+      <p class="subtitle" id="method-subtitle"></p>
+      <div class="card-stack">
+        <button class="card-btn" data-method="breath">
+          Focus on Breath
+          <span class="card-desc">Guided breathing pattern</span>
+        </button>
+        <button class="card-btn" data-method="mantra">
+          Use a Mantra
+          <span class="card-desc">A phrase to anchor your mind</span>
+        </button>
+      </div>
+    </section>
+
+    <!-- Screen 3: Mantra Select -->
+    <section id="screen-mantra">
+      <button class="back-btn" data-back="method">&larr; Back</button>
+      <h2>Pick a mantra</h2>
+      <div class="card-stack" id="mantra-list"></div>
+    </section>
+
+    <!-- Screen 4: Sit Mode -->
+    <section id="screen-sitmode">
+      <button class="back-btn" data-back="mantra">&larr; Back</button>
+      <h2>How would you like to practice?</h2>
+      <div class="card-stack">
+        <button class="card-btn" data-sitmode="quick">
+          Quick sit
+          <span class="card-desc">Timed session</span>
+        </button>
+        <button class="card-btn" data-sitmode="deep">
+          Deep sit
+          <span class="card-desc">No timer — sit as long as you need</span>
+        </button>
+      </div>
+    </section>
+
+    <!-- Screen 5: Duration Select -->
+    <section id="screen-duration">
+      <button class="back-btn" id="duration-back">&larr; Back</button>
+      <h2>How long?</h2>
+      <div class="pill-row">
+        <button class="pill-btn" data-duration="180">3 min</button>
+        <button class="pill-btn" data-duration="300">5 min</button>
+        <button class="pill-btn" data-duration="600">10 min</button>
+      </div>
+    </section>
+
+    <!-- Screen 6: Active Session -->
+    <section id="screen-session">
+      <div class="timer" id="timer-display"></div>
+      <div class="breath-circle" id="breath-circle" style="display:none;"></div>
+      <div class="breath-cue" id="breath-cue"></div>
+      <div class="mantra-display" id="session-mantra-display" style="display:none;"></div>
+      <div class="session-mantra" id="session-mantra-timed" style="display:none;"></div>
+      <button class="subtle-btn" id="end-btn">End early</button>
+    </section>
+
+    <!-- Screen 7: Completion -->
+    <section id="screen-complete">
+      <div class="complete-msg">Session complete</div>
+      <p class="affirmation">You gave yourself this moment. That matters.</p>
+      <button class="restart-btn" id="restart-btn">Start again</button>
+    </section>
+
+  </div>
+
+  <script>
+    const CONTENT = {
+      anxious: {
+        label: 'Anxious',
+        mantras: [
+          { text: 'I am safe in this moment', origin: 'MBSR — Mindfulness-Based Stress Reduction' },
+          { text: 'This too shall pass', origin: 'Stoic & Sufi traditions' },
+          { text: 'Om Shanti', origin: 'Vedic peace mantra' }
+        ],
+        breath: { name: '4-7-8 Breathing', inhale: 4, hold1: 7, exhale: 8, hold2: 0 }
+      },
+      sad: {
+        label: 'Sad',
+        mantras: [
+          { text: 'May I be filled with loving-kindness', origin: 'Metta (loving-kindness) meditation' },
+          { text: 'I am worthy of love and compassion', origin: 'Self-compassion research (Kristin Neff)' },
+          { text: 'Om Mani Padme Hum', origin: 'Tibetan Buddhist compassion mantra' }
+        ],
+        breath: { name: 'Coherent Breathing', inhale: 5, hold1: 0, exhale: 5, hold2: 0 }
+      },
+      angry: {
+        label: 'Angry',
+        mantras: [
+          { text: 'Let go, let be', origin: 'Buddhist non-attachment' },
+          { text: 'I choose peace over being right', origin: 'Cognitive-behavioral reframing' },
+          { text: 'Om Shanti Shanti Shanti', origin: 'Hindu triple peace invocation' }
+        ],
+        breath: { name: 'Extended Exhale', inhale: 4, hold1: 0, exhale: 8, hold2: 0 }
+      },
+      restless: {
+        label: 'Restless',
+        mantras: [
+          { text: 'Here. Now. This.', origin: 'Zen shikantaza practice' },
+          { text: 'So Hum — I am that', origin: 'Vedantic mantra tradition' },
+          { text: 'One breath at a time', origin: 'Secular mindfulness' }
+        ],
+        breath: { name: 'Box Breathing', inhale: 4, hold1: 4, exhale: 4, hold2: 4 }
+      },
+      overwhelmed: {
+        label: 'Overwhelmed',
+        mantras: [
+          { text: 'One thing at a time', origin: 'Secular mindfulness' },
+          { text: 'I can only do what I can do', origin: 'Self-compassion (Kristin Neff)' },
+          { text: 'Om', origin: 'Vedic — the simplest universal mantra' }
+        ],
+        breath: { name: '4-7-8 Breathing', inhale: 4, hold1: 7, exhale: 8, hold2: 0 }
+      }
+    };
+
+    const state = {
+      screen: 'emotion',
+      emotion: null,
+      method: null,
+      mantra: null,
+      sitMode: null,
+      duration: null,
+      startTime: null
+    };
+
+    let timerInterval = null;
+    let breathTimeouts = [];
+
+    // --- Navigation ---
+    function navigate(screen) {
+      const current = document.querySelector('section.visible');
+      if (current) current.classList.remove('visible');
+      // Small delay for fade effect
+      requestAnimationFrame(() => {
+        const next = document.getElementById('screen-' + screen);
+        next.classList.add('visible');
+      });
+      state.screen = screen;
+    }
+
+    // --- Emotion ---
+    document.querySelectorAll('[data-emotion]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        state.emotion = btn.dataset.emotion;
+        const label = CONTENT[state.emotion].label;
+        document.getElementById('method-subtitle').textContent = 'For when you feel ' + label.toLowerCase();
+        navigate('method');
+      });
+    });
+
+    // --- Method ---
+    document.querySelectorAll('[data-method]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        state.method = btn.dataset.method;
+        if (state.method === 'mantra') {
+          populateMantras();
+          navigate('mantra');
+        } else {
+          navigate('duration');
+          document.getElementById('duration-back').dataset.back = 'method';
+        }
+      });
+    });
+
+    function populateMantras() {
+      const list = document.getElementById('mantra-list');
+      list.innerHTML = '';
+      CONTENT[state.emotion].mantras.forEach(m => {
+        const btn = document.createElement('button');
+        btn.className = 'card-btn';
+        btn.innerHTML = m.text + '<span class="card-desc">' + m.origin + '</span>';
+        btn.addEventListener('click', () => {
+          state.mantra = m.text;
+          navigate('sitmode');
+        });
+        list.appendChild(btn);
+      });
+    }
+
+    // --- Sit Mode ---
+    document.querySelectorAll('[data-sitmode]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        state.sitMode = btn.dataset.sitmode;
+        if (state.sitMode === 'deep') {
+          startSession(null);
+        } else {
+          document.getElementById('duration-back').dataset.back = 'sitmode';
+          navigate('duration');
+        }
+      });
+    });
+
+    // --- Duration ---
+    document.querySelectorAll('[data-duration]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        startSession(parseInt(btn.dataset.duration));
+      });
+    });
+
+    // --- Session ---
+    function startSession(duration) {
+      state.duration = duration;
+      state.startTime = Date.now();
+
+      const timerEl = document.getElementById('timer-display');
+      const circleEl = document.getElementById('breath-circle');
+      const cueEl = document.getElementById('breath-cue');
+      const mantraDeepEl = document.getElementById('session-mantra-display');
+      const mantraTimedEl = document.getElementById('session-mantra-timed');
+      const endBtn = document.getElementById('end-btn');
+
+      // Reset visibility
+      timerEl.style.display = 'none';
+      circleEl.style.display = 'none';
+      cueEl.textContent = '';
+      mantraDeepEl.style.display = 'none';
+      mantraTimedEl.style.display = 'none';
+
+      if (state.method === 'breath') {
+        // Timed breath session
+        timerEl.style.display = '';
+        circleEl.style.display = '';
+        timerEl.textContent = formatTime(duration);
+        startTimer(duration);
+        startBreathCycle();
+      } else if (state.sitMode === 'deep') {
+        // Untimed mantra session
+        mantraDeepEl.style.display = '';
+        mantraDeepEl.textContent = state.mantra;
+        mantraDeepEl.classList.add('pulse');
+        endBtn.textContent = "I'm done";
+      } else {
+        // Timed mantra session
+        timerEl.style.display = '';
+        mantraTimedEl.style.display = '';
+        mantraTimedEl.textContent = state.mantra;
+        timerEl.textContent = formatTime(duration);
+        startTimer(duration);
+      }
+
+      if (state.sitMode !== 'deep') {
+        endBtn.textContent = 'End early';
+      }
+
+      navigate('session');
+    }
+
+    function startTimer(duration) {
+      clearInterval(timerInterval);
+      const timerEl = document.getElementById('timer-display');
+      timerInterval = setInterval(() => {
+        const elapsed = (Date.now() - state.startTime) / 1000;
+        const remaining = Math.max(0, duration - elapsed);
+        timerEl.textContent = formatTime(Math.ceil(remaining));
+        if (remaining <= 0) {
+          completeSession();
+        }
+      }, 250);
+    }
+
+    function formatTime(seconds) {
+      const m = Math.floor(seconds / 60);
+      const s = seconds % 60;
+      return String(m).padStart(2, '0') + ':' + String(s).padStart(2, '0');
+    }
+
+    // --- Breath Cycle ---
+    function startBreathCycle() {
+      clearBreathTimeouts();
+      const b = CONTENT[state.emotion].breath;
+      const cueEl = document.getElementById('breath-cue');
+      const circleEl = document.getElementById('breath-circle');
+
+      function cycle() {
+        let t = 0;
+
+        // Inhale
+        cueEl.textContent = 'Breathe in...';
+        circleEl.style.transitionDuration = b.inhale + 's';
+        circleEl.style.transform = 'scale(1.5)';
+        t += b.inhale * 1000;
+
+        // Hold 1
+        if (b.hold1 > 0) {
+          breathTimeouts.push(setTimeout(() => {
+            cueEl.textContent = 'Hold...';
+          }, t));
+          t += b.hold1 * 1000;
+        }
+
+        // Exhale
+        breathTimeouts.push(setTimeout(() => {
+          cueEl.textContent = 'Breathe out...';
+          circleEl.style.transitionDuration = b.exhale + 's';
+          circleEl.style.transform = 'scale(1)';
+        }, t));
+        t += b.exhale * 1000;
+
+        // Hold 2
+        if (b.hold2 > 0) {
+          breathTimeouts.push(setTimeout(() => {
+            cueEl.textContent = 'Hold...';
+          }, t));
+          t += b.hold2 * 1000;
+        }
+
+        // Repeat
+        breathTimeouts.push(setTimeout(cycle, t));
+      }
+
+      cycle();
+    }
+
+    function clearBreathTimeouts() {
+      breathTimeouts.forEach(id => clearTimeout(id));
+      breathTimeouts = [];
+    }
+
+    // --- Complete ---
+    function completeSession() {
+      clearInterval(timerInterval);
+      clearBreathTimeouts();
+      document.getElementById('session-mantra-display').classList.remove('pulse');
+      document.getElementById('breath-circle').style.transform = 'scale(1)';
+      playChime();
+      navigate('complete');
+    }
+
+    // End early / I'm done
+    document.getElementById('end-btn').addEventListener('click', completeSession);
+
+    // Restart
+    document.getElementById('restart-btn').addEventListener('click', () => {
+      state.emotion = null;
+      state.method = null;
+      state.mantra = null;
+      state.sitMode = null;
+      state.duration = null;
+      state.startTime = null;
+      navigate('emotion');
+    });
+
+    // --- Back buttons ---
+    document.querySelectorAll('[data-back]').forEach(btn => {
+      btn.addEventListener('click', () => navigate(btn.dataset.back));
+    });
+
+    // --- Chime (Web Audio API) ---
+    function playChime() {
+      try {
+        const ctx = new (window.AudioContext || window.webkitAudioContext)();
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(528, ctx.currentTime);
+        gain.gain.setValueAtTime(0.3, ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 2);
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.start();
+        osc.stop(ctx.currentTime + 2);
+      } catch (e) { /* silent fallback */ }
+    }
+  </script>
+</body>
+</html>
